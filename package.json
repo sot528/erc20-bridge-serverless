@@ -7,5 +7,9 @@
   "license": "MIT",
   "dependencies": {
     "serverless": "^1.37.1"
+  },
+  "scripts": {
+    "deploy": "./node_modules/serverless/bin/serverless deploy --region ap-northeast-1",
+    "remove": "./node_modules/serverless/bin/serverless remove -v --region ap-northeast-1"
   }
 }
