@@ -6,7 +6,8 @@
   "author": "Go Hayakawa <go.hayakawa@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "serverless": "^1.37.1"
+    "serverless": "^1.37.1",
+    "serverless-python-requirements": "^4.3.0"
   },
   "scripts": {
     "deploy": "./node_modules/serverless/bin/serverless deploy --region ap-northeast-1",
