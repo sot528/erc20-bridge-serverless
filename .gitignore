@@ -19,9 +19,12 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
+__pycache__/
+*.py[cod]
+*$py.class
 
 # Serverless directories
 .serverless
 
 # Editor
-vscode/
+.vscode/

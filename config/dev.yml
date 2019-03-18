@@ -1,0 +1,15 @@
+# Public chain
+PUBLIC_CHAIN_RPC_URL: ${ssm:hayakawassmPublicChainOperationUrl}
+PUBLIC_CHAIN_BRIDGE_CONTRACT_ADDRESS: ${ssm:hayakawassmPublicChainBridgeAddress}
+PUBLIC_CHAIN_OPERATOR_PRIVATE_KEY: ${ssm:hayakawassmPublicChainBridgeOperatorPrivateKey~true}
+PUBLIC_CHAIN_OPERATOR_SIGNER: ""
+PUBLIC_CHAIN_GAS: 5500000
+PUBLIC_CHAIN_GAS_PRICE: 1000000000
+
+# Private chain
+PRIVATE_CHAIN_RPC_URL: ${ssm:hayakawassmPrivateChainOperationUrl}
+PRIVATE_CHAIN_BRIDGE_CONTRACT_ADDRESS: ${ssm:hayakawassmPrivateChainBridgeAddress}
+PRIVATE_CHAIN_OPERATOR_PRIVATE_KEY: ""
+PRIVATE_CHAIN_OPERATOR_SIGNER: ${ssm:hayakawassmPrivateChainMainSigner}
+PRIVATE_CHAIN_GAS: 3500000
+PRIVATE_CHAIN_GAS_PRICE: 2100000000000

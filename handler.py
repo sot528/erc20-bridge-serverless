@@ -1,24 +1,16 @@
+import os
 import json
+import boto3
+from src.operator import relay
+
+# DynamoDB
+db = boto3.resource('dynamodb')
+table = db.Table(os.environ['STAGE'] + '-erc20BridgeInfo')
 
 
-def hello(event, context):
-    body = {
-        "message": "Go Serverless v1.0! Your function executed successfully!",
-        "input": event
-    }
+def relay_public_to_private(event, context):
+    relay(1, table)
 
-    response = {
-        "statusCode": 200,
-        "body": json.dumps(body)
-    }
 
-    return response
-
-    # Use this code if you don't use the http event with the LAMBDA-PROXY
-    # integration
-    """
-    return {
-        "message": "Go Serverless v1.0! Your function executed successfully!",
-        "event": event
-    }
-    """
+def relay_private_to_public(event, content):
+    relay(2, table)
