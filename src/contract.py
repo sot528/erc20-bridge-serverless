@@ -49,6 +49,15 @@ def get_relay_event_logs(provider, contract_address, from_block, to_block="lates
     return logs
 
 
+def get_relay_event_log_by_tx_hash(provider, relay_transaction_hash):
+    web3client = Web3(provider)
+
+    transaction_reciept = web3client.eth.getTransactionReceipt(
+        relay_transaction_hash)
+
+    return transaction_reciept['logs'][1]
+
+
 def parse_relay_event_log(relay_event_log):
     return {
         "sender": "0x" + relay_event_log['topics'][1].hex()[-40:],

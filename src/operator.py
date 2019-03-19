@@ -3,6 +3,7 @@ import logging
 from web3 import Web3
 from src.contract import apply_relay
 from src.contract import get_relay_event_logs
+from src.contract import get_relay_event_log_by_tx_hash
 from src.contract import parse_relay_event_log
 
 # Logger
@@ -10,9 +11,9 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
-def relay(mode, dynamo_table):
+def bridge(mode, dynamo_table):
     """
-    Execute relay process.
+    Execute bridge process.
 
     Args:
         mode (Integer):
@@ -55,22 +56,64 @@ def relay(mode, dynamo_table):
             .format(**parsed_event))
 
         try:
-            response = apply_relay(provider_to, chain_config['BRIDGE_CONTRACT_ADDRESS_TO'],
-                                   chain_config['CHAIN_OPERATOR_SIGNER_TO'],
-                                   chain_config['OPERATOR_PRIVATE_KEY_TO'],
-                                   parsed_event['sender'], parsed_event['recipient'], parsed_event['amount'], parsed_event['txHash'],
-                                   chain_config['GAS_TO'], chain_config['GAS_PRICE_TO'])
-
+            response = _apply_relay(provider_to, chain_config, parsed_event)
             logger.info(
                 '[ApplyRelay] txHash={txHash}, relayEventTxHash={relayEventTxHash}'.format(txHash=response, relayEventTxHash=parsed_event['txHash']))
         except Exception as e:
             logger.error('[ApplyRelay] failed. error={error}'.format(error=e))
             continue
 
-    logger.info('-----------------------------------------------------')
+    logger.info('Finished.')
 
     # Update block offset
     _update_block_offset(mode, dynamo_table, latest_block_num + 1)
+
+
+def execute_apply_relay(mode, relay_transactions):
+    """
+    Execute applyRelay.
+
+    Args:
+        mode (Integer):
+            1: Execute applyRelay to private chain
+            2: Execute applyRelay to public chain
+    """
+    if mode is (1, 2):
+        raise ValueError("Mode must be 1 or 2")
+
+    # Load chain config
+    chain_config = _load_chain_config(mode)
+
+    # Providers
+    provider_from = Web3.HTTPProvider(chain_config['CHAIN_RPC_URL_FROM'])
+    provider_to = Web3.HTTPProvider(chain_config['CHAIN_RPC_URL_TO'])
+
+    for relay_transaction in relay_transactions:
+        relay_event_log = get_relay_event_log_by_tx_hash(
+            provider_from, relay_transaction)
+        parsed_event = parse_relay_event_log(relay_event_log)
+
+        logger.info(
+            '[RelayEvent] blockNum={blockNumber}, txHash={txHash}, sender={sender}, recipient={recipient}, amount={amount}, fee={fee}'
+            .format(**parsed_event))
+
+        try:
+            response = _apply_relay(provider_to, chain_config, parsed_event)
+            logger.info(
+                '[ApplyRelay] txHash={txHash}, relayEventTxHash={relayEventTxHash}'.format(txHash=response, relayEventTxHash=parsed_event['txHash']))
+        except Exception as e:
+            logger.error('[ApplyRelay] failed. error={error}'.format(error=e))
+            continue
+
+    logger.info('Finished')
+
+
+def _apply_relay(provider, chain_config, relay_event):
+    return apply_relay(provider, chain_config['BRIDGE_CONTRACT_ADDRESS_TO'],
+                       chain_config['CHAIN_OPERATOR_SIGNER_TO'],
+                       chain_config['OPERATOR_PRIVATE_KEY_TO'],
+                       relay_event['sender'], relay_event['recipient'], relay_event['amount'], relay_event['txHash'],
+                       chain_config['GAS_TO'], chain_config['GAS_PRICE_TO'])
 
 
 def _get_latest_block_number(provider):

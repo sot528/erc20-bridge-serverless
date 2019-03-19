@@ -53,8 +53,8 @@ provider:
 
 # Lambda functions
 functions:
-  relayPublicToPrivate:
-    handler: handler.relay_public_to_private
+  bridgePublicToPrivate:
+    handler: handler.bridge_public_to_private
 
     # Scheduling
     events:
@@ -67,12 +67,32 @@ functions:
       PRIVATE_CHAIN_GAS: ${file(./config/${self:provider.stage}.yml):PRIVATE_CHAIN_GAS}
       PRIVATE_CHAIN_GAS_PRICE: ${file(./config/${self:provider.stage}.yml):PRIVATE_CHAIN_GAS_PRICE}
 
-  relayPrivateToPublic:
-    handler: handler.relay_private_to_public
+  brigePrivateToPublic:
+    handler: handler.bridge_private_to_public
 
     # Scheduling
     events:
       - schedule: rate(10 minutes)
+
+    # Function specific environts
+    environment:
+      PUBLIC_CHAIN_GAS: ${file(./config/${self:provider.stage}.yml):PUBLIC_CHAIN_GAS}
+      PUBLIC_CHAIN_GAS_PRICE: ${file(./config/${self:provider.stage}.yml):PUBLIC_CHAIN_GAS_PRICE}
+      PUBLIC_CHAIN_OPERATOR_PRIVATE_KEY: ${file(./config/${self:provider.stage}.yml):PUBLIC_CHAIN_OPERATOR_PRIVATE_KEY}
+      PUBLIC_CHAIN_OPERATOR_SIGNER: ${file(./config/${self:provider.stage}.yml):PUBLIC_CHAIN_OPERATOR_SIGNER}
+
+  applyRelayPrivate:
+    handler: handler.apply_relay_private
+
+    # Function specific environts
+    environment:
+      PRIVATE_CHAIN_OPERATOR_PRIVATE_KEY: ${file(./config/${self:provider.stage}.yml):PRIVATE_CHAIN_OPERATOR_PRIVATE_KEY}
+      PRIVATE_CHAIN_OPERATOR_SIGNER: ${file(./config/${self:provider.stage}.yml):PRIVATE_CHAIN_OPERATOR_SIGNER}
+      PRIVATE_CHAIN_GAS: ${file(./config/${self:provider.stage}.yml):PRIVATE_CHAIN_GAS}
+      PRIVATE_CHAIN_GAS_PRICE: ${file(./config/${self:provider.stage}.yml):PRIVATE_CHAIN_GAS_PRICE}
+
+  applyRelayPublic:
+    handler: handler.apply_relay_public
 
     # Function specific environts
     environment:
