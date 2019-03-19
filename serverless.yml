@@ -38,12 +38,10 @@ provider:
 
   # VPC
   vpc:
-    ######## Modify here ########
     subnetIds:
-      - subnet-xxxxx
+      - ${file(./config/${self:provider.stage}.yml):VPC_SUBNET_IDS}
     securityGroupIds:
-      - sg-xxxxx
-    #############################
+      - ${file(./config/${self:provider.stage}.yml):VPC_SECURITY_GROUP_IDS}
 
   # Package
   package:
