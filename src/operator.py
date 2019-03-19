@@ -51,7 +51,7 @@ def relay(mode, dynamo_table):
     for relay_event_log in relay_event_logs:
         parsed_event = parse_relay_event_log(relay_event_log)
         logger.info(
-            '[RelayEvent] blockNum={blockNumber}, txHash={txHash}, sender={sender}, recipient={recipient}, amount={amount}'
+            '[RelayEvent] blockNum={blockNumber}, txHash={txHash}, sender={sender}, recipient={recipient}, amount={amount}, fee={fee}'
             .format(**parsed_event))
 
         try:
