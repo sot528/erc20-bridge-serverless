@@ -11,27 +11,16 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
-def bridge(mode, dynamo_table):
+def bridge(chain_config, dynamo_table, private_key):
+    """ Execute bridge process.
     """
-    Execute bridge process.
-
-    Args:
-        mode (Integer):
-            1: Relay token from public chain to private chain
-            2: Relay token from private chain to public chain
-    """
-    if mode is (1, 2):
-        raise ValueError("Mode must be 1 or 2")
-
-    # Load chain config
-    chain_config = _load_chain_config(mode)
-
     # Providers
-    provider_from = Web3.HTTPProvider(chain_config['CHAIN_RPC_URL_FROM'])
-    provider_to = Web3.HTTPProvider(chain_config['CHAIN_RPC_URL_TO'])
+    provider_from = Web3.HTTPProvider(chain_config['chainRpcUrlFrom'])
+    provider_to = Web3.HTTPProvider(chain_config['chainRpcUrlTo'])
 
     # Get block offset
-    relay_block_offset = _get_block_offset(mode, dynamo_table)
+    relay_block_offset = _get_block_offset(
+        chain_config['toPublicChain'], dynamo_table)
 
     # Get latest block num
     latest_block_num = _get_latest_block_number(provider_from)
@@ -43,7 +32,7 @@ def bridge(mode, dynamo_table):
 
     # Get Relay events
     relay_event_logs = get_relay_event_logs(
-        provider_from, chain_config['BRIDGE_CONTRACT_ADDRESS_FROM'], relay_block_offset, latest_block_num)
+        provider_from, chain_config['bridgeContractAddressFrom'], relay_block_offset, latest_block_num)
 
     logger.info('---------- {num} Relay events from block {fromBlock} to {toBlock} ----------'.format(
         num=len(relay_event_logs), fromBlock=relay_block_offset, toBlock=latest_block_num))
@@ -56,7 +45,8 @@ def bridge(mode, dynamo_table):
             .format(**parsed_event))
 
         try:
-            response = _apply_relay(provider_to, chain_config, parsed_event)
+            response = _apply_relay(
+                provider_to, chain_config, private_key, parsed_event)
             logger.info(
                 '[ApplyRelay] txHash={txHash}, relayEventTxHash={relayEventTxHash}'.format(txHash=response, relayEventTxHash=parsed_event['txHash']))
         except Exception as e:
@@ -66,27 +56,16 @@ def bridge(mode, dynamo_table):
     logger.info('Finished.')
 
     # Update block offset
-    _update_block_offset(mode, dynamo_table, latest_block_num + 1)
+    _update_block_offset(
+        chain_config['toPublicChain'], dynamo_table, latest_block_num + 1)
 
 
-def execute_apply_relay(mode, relay_transactions):
+def execute_apply_relay(chain_config, private_key, relay_transactions):
+    """ Execute applyRelay.
     """
-    Execute applyRelay.
-
-    Args:
-        mode (Integer):
-            1: Execute applyRelay to private chain
-            2: Execute applyRelay to public chain
-    """
-    if mode is (1, 2):
-        raise ValueError("Mode must be 1 or 2")
-
-    # Load chain config
-    chain_config = _load_chain_config(mode)
-
     # Providers
-    provider_from = Web3.HTTPProvider(chain_config['CHAIN_RPC_URL_FROM'])
-    provider_to = Web3.HTTPProvider(chain_config['CHAIN_RPC_URL_TO'])
+    provider_from = Web3.HTTPProvider(chain_config['chainRpcUrlFrom'])
+    provider_to = Web3.HTTPProvider(chain_config['chainRpcUrlTo'])
 
     for relay_transaction in relay_transactions:
         relay_event_log = get_relay_event_log_by_tx_hash(
@@ -98,7 +77,8 @@ def execute_apply_relay(mode, relay_transactions):
             .format(**parsed_event))
 
         try:
-            response = _apply_relay(provider_to, chain_config, parsed_event)
+            response = _apply_relay(
+                provider_to, chain_config, private_key, parsed_event)
             logger.info(
                 '[ApplyRelay] txHash={txHash}, relayEventTxHash={relayEventTxHash}'.format(txHash=response, relayEventTxHash=parsed_event['txHash']))
         except Exception as e:
@@ -108,55 +88,21 @@ def execute_apply_relay(mode, relay_transactions):
     logger.info('Finished')
 
 
-def _apply_relay(provider, chain_config, relay_event):
-    return apply_relay(provider, chain_config['BRIDGE_CONTRACT_ADDRESS_TO'],
-                       chain_config['CHAIN_OPERATOR_SIGNER_TO'],
-                       chain_config['OPERATOR_PRIVATE_KEY_TO'],
+def _apply_relay(provider, chain_config, private_key, relay_event):
+    return apply_relay(provider, chain_config['bridgeContractAddressTo'],
+                       private_key,
                        relay_event['sender'], relay_event['recipient'], relay_event['amount'], relay_event['txHash'],
-                       chain_config['GAS_TO'], chain_config['GAS_PRICE_TO'])
+                       chain_config['gas'], chain_config['gasPrice'])
 
 
 def _get_latest_block_number(provider):
-    web3Client = Web3(provider)
-    return web3Client.eth.blockNumber
+    web3 = Web3(provider)
+    return web3.eth.blockNumber
 
 
-def _load_chain_config(mode):
-    config = {}
-    if mode is 1:
-        config['CHAIN_RPC_URL_FROM'] = os.environ['PUBLIC_CHAIN_RPC_URL']
-        config['BRIDGE_CONTRACT_ADDRESS_FROM'] = os.environ['PUBLIC_CHAIN_BRIDGE_CONTRACT_ADDRESS']
-        config['CHAIN_RPC_URL_TO'] = os.environ['PRIVATE_CHAIN_RPC_URL']
-        config['BRIDGE_CONTRACT_ADDRESS_TO'] = os.environ['PRIVATE_CHAIN_BRIDGE_CONTRACT_ADDRESS']
-        config['OPERATOR_PRIVATE_KEY_TO'] = os.environ['PRIVATE_CHAIN_OPERATOR_PRIVATE_KEY']
-        config['CHAIN_OPERATOR_SIGNER_TO'] = os.environ['PRIVATE_CHAIN_OPERATOR_SIGNER']
-        config['GAS_TO'] = os.environ['PRIVATE_CHAIN_GAS']
-        config['GAS_PRICE_TO'] = os.environ['PRIVATE_CHAIN_GAS_PRICE']
-    elif mode is 2:
-        config['CHAIN_RPC_URL_FROM'] = os.environ['PRIVATE_CHAIN_RPC_URL']
-        config['BRIDGE_CONTRACT_ADDRESS_FROM'] = os.environ['PRIVATE_CHAIN_BRIDGE_CONTRACT_ADDRESS']
-        config['CHAIN_RPC_URL_TO'] = os.environ['PUBLIC_CHAIN_RPC_URL']
-        config['BRIDGE_CONTRACT_ADDRESS_TO'] = os.environ['PUBLIC_CHAIN_BRIDGE_CONTRACT_ADDRESS']
-        config['OPERATOR_PRIVATE_KEY_TO'] = os.environ['PUBLIC_CHAIN_OPERATOR_PRIVATE_KEY']
-        config['CHAIN_OPERATOR_SIGNER_TO'] = os.environ['PUBLIC_CHAIN_OPERATOR_SIGNER']
-        config['GAS_TO'] = os.environ['PUBLIC_CHAIN_GAS']
-        config['GAS_PRICE_TO'] = os.environ['PUBLIC_CHAIN_GAS_PRICE']
-    else:
-        raise ValueError("mode must be 1 or 2.")
-
-    return config
-
-
-def _get_block_offset(mode, table):
-    if mode is 1:
-        key = "block_offset_public"
-    elif mode is 2:
-        key = "block_offset_private"
-    else:
-        raise ValueError("mode must be 1 or 2.")
-
+def _get_block_offset(to_public_chain, table):
     result = table.get_item(Key={
-        'key': key
+        'key': _get_block_offset_key(to_public_chain)
     })
 
     if result is None or 'Item' not in result:
@@ -165,15 +111,15 @@ def _get_block_offset(mode, table):
     return int(result['Item']['value'])
 
 
-def _update_block_offset(mode, table, offset):
-    if mode is 1:
-        key = "block_offset_public"
-    elif mode is 2:
-        key = "block_offset_private"
-    else:
-        raise ValueError("mode must be 1 or 2.")
-
+def _update_block_offset(to_public_chain, table, offset):
     table.put_item(Item={
-        "key": key,
+        "key": _get_block_offset_key(to_public_chain),
         "value": int(offset)
     })
+
+
+def _get_block_offset_key(to_public_chain):
+    if to_public_chain:
+        return "private_to_public_offset"
+    else:
+        return "public_to_private_offset"

@@ -10,8 +10,8 @@
     "serverless-python-requirements": "^4.3.0"
   },
   "scripts": {
-    "deploy": "./node_modules/serverless/bin/serverless deploy --stage",
-    "destroy": "./node_modules/serverless/bin/serverless remove --stage"
+    "deploy": "./node_modules/serverless/bin/serverless deploy",
+    "destroy": "./node_modules/serverless/bin/serverless remove"
   },
   "devDependencies": {
     "serverless-dynamodb-local": "^0.2.36"

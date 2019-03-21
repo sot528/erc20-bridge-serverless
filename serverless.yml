@@ -9,11 +9,23 @@ provider:
   name: aws
   runtime: python3.7
 
-  stage: ${opt:stage, 'dev'}
-  region: ap-northeast-1
+  stage: ${env:ALIS_APP_ID}
+  region: ${env:AWS_DEFAULT_REGION}
 
   # Additional statements of the Lambda's IAM Role
   iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - ssm:GetParameter
+        - kms:ListKeys
+        - kms:ListAliases
+        - kms:DescribeKey
+        - kms:ListKeyPolicies
+        - kms:GetKeyPolicy
+        - kms:GetKeyRotationStatus
+        - iam:ListUsers
+        - iam:ListRoles
+      Resource: "*"
     - Effect: Allow
       Action:
         - dynamodb:DescribeTable
@@ -23,25 +35,26 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
-      Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.stage}-erc20BridgeInfo"
+      Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.stage}ERC20BridgeInfo"
 
   # Function common environment variables
   environment:
     STAGE: ${self:provider.stage}
 
     # Public chain
-    PUBLIC_CHAIN_RPC_URL: ${file(./config/${self:provider.stage}.yml):PUBLIC_CHAIN_RPC_URL}
-    PUBLIC_CHAIN_BRIDGE_CONTRACT_ADDRESS: ${file(./config/${self:provider.stage}.yml):PUBLIC_CHAIN_BRIDGE_CONTRACT_ADDRESS}
+    PUBLIC_CHAIN_RPC_URL: ${file(./chain_config.yml):public.rpcUrl}
+    PUBLIC_CHAIN_BRIDGE_CONTRACT_ADDRESS: ${file(./chain_config.yml):public.bridgeContractAddress}
+
     # Private chain
-    PRIVATE_CHAIN_RPC_URL: ${file(./config/${self:provider.stage}.yml):PRIVATE_CHAIN_RPC_URL}
-    PRIVATE_CHAIN_BRIDGE_CONTRACT_ADDRESS: ${file(./config/${self:provider.stage}.yml):PRIVATE_CHAIN_BRIDGE_CONTRACT_ADDRESS}
+    PRIVATE_CHAIN_RPC_URL: ${file(./chain_config.yml):private.rpcUrl}
+    PRIVATE_CHAIN_BRIDGE_CONTRACT_ADDRESS: ${file(./chain_config.yml):private.bridgeContractAddress}
 
   # VPC
   vpc:
     subnetIds:
-      - ${file(./config/${self:provider.stage}.yml):VPC_SUBNET_IDS}
+      - ${env:VPC_SUBNET_ID}
     securityGroupIds:
-      - ${file(./config/${self:provider.stage}.yml):VPC_SECURITY_GROUP_IDS}
+      - ${env:VPC_SECURITY_GROUP_ID}
 
   # Package
   package:
@@ -60,10 +73,8 @@ functions:
 
     # Function specific environts
     environment:
-      PRIVATE_CHAIN_OPERATOR_PRIVATE_KEY: ${file(./config/${self:provider.stage}.yml):PRIVATE_CHAIN_OPERATOR_PRIVATE_KEY}
-      PRIVATE_CHAIN_OPERATOR_SIGNER: ${file(./config/${self:provider.stage}.yml):PRIVATE_CHAIN_OPERATOR_SIGNER}
-      PRIVATE_CHAIN_GAS: ${file(./config/${self:provider.stage}.yml):PRIVATE_CHAIN_GAS}
-      PRIVATE_CHAIN_GAS_PRICE: ${file(./config/${self:provider.stage}.yml):PRIVATE_CHAIN_GAS_PRICE}
+      PRIVATE_CHAIN_GAS: ${file(./chain_config.yml):private.gas}
+      PRIVATE_CHAIN_GAS_PRICE: ${file(./chain_config.yml):private.gasPrice}
 
   brigePrivateToPublic:
     handler: handler.bridge_private_to_public
@@ -74,30 +85,24 @@ functions:
 
     # Function specific environts
     environment:
-      PUBLIC_CHAIN_GAS: ${file(./config/${self:provider.stage}.yml):PUBLIC_CHAIN_GAS}
-      PUBLIC_CHAIN_GAS_PRICE: ${file(./config/${self:provider.stage}.yml):PUBLIC_CHAIN_GAS_PRICE}
-      PUBLIC_CHAIN_OPERATOR_PRIVATE_KEY: ${file(./config/${self:provider.stage}.yml):PUBLIC_CHAIN_OPERATOR_PRIVATE_KEY}
-      PUBLIC_CHAIN_OPERATOR_SIGNER: ${file(./config/${self:provider.stage}.yml):PUBLIC_CHAIN_OPERATOR_SIGNER}
+      PUBLIC_CHAIN_GAS: ${file(./chain_config.yml):public.gas}
+      PUBLIC_CHAIN_GAS_PRICE: ${file(./chain_config.yml):public.gasPrice}
 
   applyRelayPrivate:
     handler: handler.apply_relay_private
 
     # Function specific environts
     environment:
-      PRIVATE_CHAIN_OPERATOR_PRIVATE_KEY: ${file(./config/${self:provider.stage}.yml):PRIVATE_CHAIN_OPERATOR_PRIVATE_KEY}
-      PRIVATE_CHAIN_OPERATOR_SIGNER: ${file(./config/${self:provider.stage}.yml):PRIVATE_CHAIN_OPERATOR_SIGNER}
-      PRIVATE_CHAIN_GAS: ${file(./config/${self:provider.stage}.yml):PRIVATE_CHAIN_GAS}
-      PRIVATE_CHAIN_GAS_PRICE: ${file(./config/${self:provider.stage}.yml):PRIVATE_CHAIN_GAS_PRICE}
+      PRIVATE_CHAIN_GAS: ${file(./chain_config.yml):private.gas}
+      PRIVATE_CHAIN_GAS_PRICE: ${file(./chain_config.yml):private.gasPrice}
 
   applyRelayPublic:
     handler: handler.apply_relay_public
 
     # Function specific environts
     environment:
-      PUBLIC_CHAIN_GAS: ${file(./config/${self:provider.stage}.yml):PUBLIC_CHAIN_GAS}
-      PUBLIC_CHAIN_GAS_PRICE: ${file(./config/${self:provider.stage}.yml):PUBLIC_CHAIN_GAS_PRICE}
-      PUBLIC_CHAIN_OPERATOR_PRIVATE_KEY: ${file(./config/${self:provider.stage}.yml):PUBLIC_CHAIN_OPERATOR_PRIVATE_KEY}
-      PUBLIC_CHAIN_OPERATOR_SIGNER: ${file(./config/${self:provider.stage}.yml):PUBLIC_CHAIN_OPERATOR_SIGNER}
+      PUBLIC_CHAIN_GAS: ${file(./chain_config.yml):public.gas}
+      PUBLIC_CHAIN_GAS_PRICE: ${file(./chain_config.yml):public.gasPrice}
 
 
 # Plugins
@@ -113,7 +118,7 @@ resources:
     erc20BridgeInfo:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: ${self:provider.stage}-erc20BridgeInfo
+        TableName: ${self:provider.stage}ERC20BridgeInfo
         AttributeDefinitions:
           - AttributeName: key
             AttributeType: S
