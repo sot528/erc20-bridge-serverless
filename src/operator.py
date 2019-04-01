@@ -41,7 +41,7 @@ def bridge(chain_config, dynamo_table, private_key):
     for relay_event_log in relay_event_logs:
         parsed_event = parse_relay_event_log(relay_event_log)
         logger.info(
-            '[RelayEvent] blockNum={blockNumber}, txHash={txHash}, sender={sender}, recipient={recipient}, amount={amount}, fee={fee}'
+            '[RelayEvent] blockNum={blockNumber}, txHash={txHash}, sender={sender}, recipient={recipient}, amount={amount}, fee={fee}, timestamp={timestamp}'
             .format(**parsed_event))
 
         try:
