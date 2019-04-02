@@ -117,6 +117,7 @@ resources:
     # DynamoDB
     erc20BridgeInfo:
       Type: AWS::DynamoDB::Table
+      DeletionPolicy: Retain
       Properties:
         TableName: ${self:provider.stage}ERC20BridgeInfo
         AttributeDefinitions:
