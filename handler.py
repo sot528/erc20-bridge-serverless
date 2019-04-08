@@ -1,60 +1,77 @@
 import os
 import json
 import boto3
-from src.operator import bridge
-from src.operator import execute_apply_relay
+from src.operator import execute_bridge
+from src.operator import execute_apply_relay_by_tx_hashes
+from src.operator import execute_detect_pending_relay
 
 # DynamoDB
 db = boto3.resource('dynamodb')
 table = db.Table(os.environ['STAGE'] + 'ERC20BridgeInfo')
 
 
-def bridge_public_to_private(event, context):
-    bridge(_load_chain_config(False), table, _get_private_key(False))
+def bridge_publicToPrivate(event, context):
+    execute_bridge(_load_chain_config(True), table, _get_private_key(True))
 
 
-def bridge_private_to_public(event, content):
-    bridge(_load_chain_config(True), table, _get_private_key(True))
+def bridge_privateToPublic(event, content):
+    execute_bridge(_load_chain_config(False), table, _get_private_key(False))
 
 
-def apply_relay_private(event, content):
-    execute_apply_relay(_load_chain_config(False), _get_private_key(
-        False), event['relay_transactions'])
+def applyRelayByTxHashes_privateToPublic(event, content):
+    execute_apply_relay_by_tx_hashes(_load_chain_config(True), _get_private_key(
+        True), event['relayTransactions'])
 
 
-def apply_relay_public(event, content):
-    execute_apply_relay(_load_chain_config(
-        True), _get_private_key(True), event['relay_transactions'])
+def applyRelayByTxHashes_publicToPrivate(event, content):
+    execute_apply_relay_by_tx_hashes(_load_chain_config(
+        False), _get_private_key(False), event['relayTransactions'])
 
 
-def _load_chain_config(to_public_chain):
-    if to_public_chain:
+def detectPendingRelay_publicToPrivate(event, content):
+    execute_detect_pending_relay(_load_chain_config(True),
+                                 event['notificationEnabled'],
+                                 int(os.environ['RELAY_FROM_BLOCK_NUM']),
+                                 int(os.environ['APPLY_RELAY_FROM_BLOCK_NUM']),
+                                 int(os.environ['RELAY_IGNORE_SEC_THRESHOLD']))
+
+
+def detectPendingRelay_privateToPublic(event, content):
+    execute_detect_pending_relay(_load_chain_config(False),
+                                 event['notificationEnabled'],
+                                 int(os.environ['RELAY_FROM_BLOCK_NUM']),
+                                 int(os.environ['APPLY_RELAY_FROM_BLOCK_NUM']),
+                                 int(os.environ['RELAY_IGNORE_SEC_THRESHOLD']))
+
+
+def _load_chain_config(public_to_private):
+    if public_to_private:
         return {
-            'toPublicChain': False,
-            'chainRpcUrlFrom': os.environ['PRIVATE_CHAIN_RPC_URL'],
-            'bridgeContractAddressFrom': os.environ['PRIVATE_CHAIN_BRIDGE_CONTRACT_ADDRESS'],
-            'chainRpcUrlTo': os.environ['PUBLIC_CHAIN_RPC_URL'],
-            'bridgeContractAddressTo': os.environ['PUBLIC_CHAIN_BRIDGE_CONTRACT_ADDRESS'],
-            'gas': os.environ['PUBLIC_CHAIN_GAS'],
-            'gasPrice': os.environ['PUBLIC_CHAIN_GAS_PRICE']
-        }
-    else:
-        return {
-            'toPublicChain': True,
+            'publicToPrivate': True,
             'chainRpcUrlFrom': os.environ['PUBLIC_CHAIN_RPC_URL'],
             'bridgeContractAddressFrom': os.environ['PUBLIC_CHAIN_BRIDGE_CONTRACT_ADDRESS'],
             'chainRpcUrlTo': os.environ['PRIVATE_CHAIN_RPC_URL'],
             'bridgeContractAddressTo': os.environ['PRIVATE_CHAIN_BRIDGE_CONTRACT_ADDRESS'],
-            'gas': os.environ['PRIVATE_CHAIN_GAS'],
-            'gasPrice': os.environ['PRIVATE_CHAIN_GAS_PRICE']
+            'gas': os.environ['PRIVATE_CHAIN_GAS'] if 'PRIVATE_CHAIN_GAS' in os.environ else '',
+            'gasPrice': os.environ['PRIVATE_CHAIN_GAS_PRICE'] if 'PRIVATE_CHAIN_GAS_PRICE' in os.environ else ''
+        }
+    else:
+        return {
+            'publicToPrivate': False,
+            'chainRpcUrlFrom': os.environ['PRIVATE_CHAIN_RPC_URL'],
+            'bridgeContractAddressFrom': os.environ['PRIVATE_CHAIN_BRIDGE_CONTRACT_ADDRESS'],
+            'chainRpcUrlTo': os.environ['PUBLIC_CHAIN_RPC_URL'],
+            'bridgeContractAddressTo': os.environ['PUBLIC_CHAIN_BRIDGE_CONTRACT_ADDRESS'],
+            'gas': os.environ['PUBLIC_CHAIN_GAS'] if 'PUBLIC_CHAIN_GAS' in os.environ else '',
+            'gasPrice': os.environ['PUBLIC_CHAIN_GAS_PRICE'] if 'PUBLIC_CHAIN_GAS_PRICE' in os.environ else ''
         }
 
 
-def _get_private_key(to_public_chain):
-    if to_public_chain:
-        name = os.environ['STAGE'] + 'ssmBridgeOperatorPublicChainPrivateKey'
-    else:
+def _get_private_key(public_to_private):
+    if public_to_private:
         name = os.environ['STAGE'] + 'ssmBridgeOperatorPrivateChainPrivateKey'
+    else:
+        name = os.environ['STAGE'] + 'ssmBridgeOperatorPublicChainPrivateKey'
 
     return boto3.client('ssm').get_parameter(
         Name=name,
