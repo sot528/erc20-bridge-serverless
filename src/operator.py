@@ -2,13 +2,8 @@ import os
 import logging
 from datetime import datetime
 from web3 import Web3
-from src.contract import apply_relay
-from src.contract import get_relay_event_logs
-from src.contract import get_relay_event_log_by_tx_hash
-from src.contract import get_apply_relay_event_logs
-from src.contract import parse_relay_event_log
-from src.contract import parse_apply_relay_event_log
-from src.notification_util import notify_pending_relays
+from src import contract
+from src import notification_util
 
 # Logger
 logger = logging.getLogger()
@@ -35,7 +30,7 @@ def execute_bridge(chain_config, dynamo_table, private_key):
         return
 
     # Get Relay events
-    relay_event_logs = get_relay_event_logs(
+    relay_event_logs = contract.get_relay_event_logs(
         provider_from, chain_config['bridgeContractAddressFrom'], relay_block_offset, latest_block_num)
 
     logger.info('---------- {num} Relay events from block {fromBlock} to {toBlock} ----------'.format(
@@ -43,7 +38,7 @@ def execute_bridge(chain_config, dynamo_table, private_key):
 
     # Execute applyRelay transaction for each relay event
     for relay_event_log in relay_event_logs:
-        parsed_event = parse_relay_event_log(relay_event_log)
+        parsed_event = contract.parse_relay_event_log(relay_event_log)
         logger.info(
             '[RelayEvent] timestamp={timestamp}, blockNum={blockNumber}, txHash={txHash}, sender={sender}, recipient={recipient}, amount={amount}, fee={fee}'
             .format(**parsed_event))
@@ -72,9 +67,9 @@ def execute_apply_relay_by_tx_hashes(chain_config, private_key, relay_transactio
     provider_to = Web3.HTTPProvider(chain_config['chainRpcUrlTo'])
 
     for relay_transaction in relay_transactions:
-        relay_event_log = get_relay_event_log_by_tx_hash(
+        relay_event_log = contract.get_relay_event_log_by_tx_hash(
             provider_from, relay_transaction)
-        parsed_event = parse_relay_event_log(relay_event_log)
+        parsed_event = contract.parse_relay_event_log(relay_event_log)
 
         logger.info(
             '[RelayEvent] timestamp={timestamp}, blockNum={blockNumber}, txHash={txHash}, sender={sender}, recipient={recipient}, amount={amount}, fee={fee}'
@@ -104,24 +99,24 @@ def execute_detect_pending_relay(chain_config, notification_enabled, relay_from_
     provider_to = Web3.HTTPProvider(chain_config['chainRpcUrlTo'])
 
     # Relay events
-    relay_events = get_relay_event_logs(
+    relay_events = contract.get_relay_event_logs(
         provider_from, chain_config['bridgeContractAddressFrom'], relay_from_block_num)
 
     # ApplyRelay events
-    apply_relay_events = get_apply_relay_event_logs(
+    apply_relay_events = contract.get_apply_relay_event_logs(
         provider_to, chain_config['bridgeContractAddressFrom'], apply_relay_from_block_num)
 
     # Extract completed Relay events
     completed_relay_tx_hashes = set()
     for apply_relay_event in apply_relay_events:
-        parsed_apply_relay_event = parse_apply_relay_event_log(
+        parsed_apply_relay_event = contract.parse_apply_relay_event_log(
             apply_relay_event)
         completed_relay_tx_hashes.add(parsed_apply_relay_event['relayTxHash'])
 
     # Extract pending Relay events
     pending_relays = []
     for relay_event in relay_events:
-        parsed_relay_event = parse_relay_event_log(relay_event)
+        parsed_relay_event = contract.parse_relay_event_log(relay_event)
 
         # Ignore latest events
         if (datetime.utcnow().timestamp() - parsed_relay_event['timestamp']) < relay_ignore_sec_threshold:
@@ -141,17 +136,17 @@ def execute_detect_pending_relay(chain_config, notification_enabled, relay_from_
 
         # Notify to slack
         if notification_enabled:
-            notify_pending_relays(
+            notification_util.notify_pending_relays(
                 chain_config['publicToPrivate'], pending_relays, relay_from_block_num, apply_relay_from_block_num)
     else:
         logger.info("No pending relay was detected.")
 
 
 def _apply_relay(provider, chain_config, private_key, relay_event):
-    return apply_relay(provider, chain_config['bridgeContractAddressTo'],
-                       private_key,
-                       relay_event['sender'], relay_event['recipient'], relay_event['amount'], relay_event['txHash'],
-                       chain_config['gas'], chain_config['gasPrice'])
+    return contract.apply_relay(provider, chain_config['bridgeContractAddressTo'],
+                                private_key,
+                                relay_event['sender'], relay_event['recipient'], relay_event['amount'], relay_event['txHash'],
+                                chain_config['gas'], chain_config['gasPrice'])
 
 
 def _get_latest_block_number(provider):
