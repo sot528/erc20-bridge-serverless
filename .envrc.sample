@@ -8,12 +8,12 @@ export ALIS_APP_ID=xxxxx
 # --- ERC20 Bridge ---
 
 ## VPC
-VPC_SUBNET_ID: xxxxx
-VPC_SECURITY_GROUP_ID: xxxxx
+export VPC_SUBNET_ID=xxxxx
+export VPC_SECURITY_GROUP_ID=xxxxx
 
 ## SSMパラメータ
-PUBLIC_CHAIN_PRIVATE_KEY_SSM_NAME: xxxxx
-PRIVATE_CHAIN_PRIVATE_KEY_SSM_NAME: xxxxx
+export PUBLIC_CHAIN_PRIVATE_KEY_SSM_NAME=xxxxx
+export PRIVATE_CHAIN_PRIVATE_KEY_SSM_NAME=xxxxx
 
 
 # --- AWS ---
