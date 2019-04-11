@@ -12,7 +12,7 @@
   "scripts": {
     "deploy": "./node_modules/serverless/bin/serverless deploy",
     "destroy": "./node_modules/serverless/bin/serverless remove",
-    "test": "./exec_test.sh"
+    "test": "python -m unittest discover"
   },
   "devDependencies": {
     "serverless-dynamodb-local": "^0.2.36"
