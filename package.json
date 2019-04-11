@@ -11,7 +11,8 @@
   },
   "scripts": {
     "deploy": "./node_modules/serverless/bin/serverless deploy",
-    "destroy": "./node_modules/serverless/bin/serverless remove"
+    "destroy": "./node_modules/serverless/bin/serverless remove",
+    "test": "./exec_test.sh"
   },
   "devDependencies": {
     "serverless-dynamodb-local": "^0.2.36"
