@@ -18,14 +18,14 @@ def bridgePriToPub(event, content):
     execute_bridge(_load_chain_config(False), table, _get_private_key(False))
 
 
-def applyRelayByTxHashesPriToPub(event, content):
-    execute_apply_relay_by_tx_hashes(_load_chain_config(True), _get_private_key(
-        True), event['relayTransactions'])
-
-
 def applyRelayByTxHashesPubToPri(event, content):
     execute_apply_relay_by_tx_hashes(_load_chain_config(
-        False), _get_private_key(False), event['relayTransactions'])
+        True), _get_private_key(True), event['relayTransactions'])
+
+
+def applyRelayByTxHashesPriToPub(event, content):
+    execute_apply_relay_by_tx_hashes(_load_chain_config(False), _get_private_key(
+        False), event['relayTransactions'])
 
 
 def detectPendingRelayPubToPri(event, content):
