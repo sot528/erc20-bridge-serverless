@@ -56,12 +56,6 @@ provider:
     securityGroupIds:
       - ${env:VPC_SECURITY_GROUP_ID}
 
-  # Package
-  package:
-    include:
-      - src/operator.py
-      - src/slack_notification_util.py
-
 
 # Lambda functions
 functions:
@@ -146,7 +140,6 @@ functions:
 # Plugins
 plugins:
   - serverless-python-requirements
-  - serverless-dynamodb-local
 
 
 # Resources
@@ -173,9 +166,3 @@ resources:
 custom:
   pythonRequirements:
     dockerizePip: true
-  dynamodb:
-    start:
-      port: 8000
-      inMemory: true
-      migrate: true
-      seed: false
