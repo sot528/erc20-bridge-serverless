@@ -59,8 +59,8 @@ provider:
 
 # Lambda functions
 functions:
-  bridge_publicToPrivate:
-    handler: handler.bridge_publicToPrivate
+  bridgePubToPri:
+    handler: handler.bridgePubToPri
 
     # # Scheduling
     # events:
@@ -71,8 +71,8 @@ functions:
       PRIVATE_CHAIN_GAS: ${file(./chain_config.yml):private.gas}
       PRIVATE_CHAIN_GAS_PRICE: ${file(./chain_config.yml):private.gasPrice}
 
-  bridge_privateToPublic:
-    handler: handler.bridge_privateToPublic
+  bridgePriToPub:
+    handler: handler.bridgePriToPub
 
     # NOTICE 初期運用時は手動で実行
     # # Scheduling
@@ -84,24 +84,24 @@ functions:
       PUBLIC_CHAIN_GAS: ${file(./chain_config.yml):public.gas}
       PUBLIC_CHAIN_GAS_PRICE: ${file(./chain_config.yml):public.gasPrice}
 
-  applyRelayByTxHashes_pubToPri:
-    handler: handler.applyRelayByTxHashes_publicToPrivate
+  applyRelayByTxHashesPubToPri:
+    handler: handler.applyRelayByTxHashesPubToPri
 
     # Function specific environts
     environment:
       PRIVATE_CHAIN_GAS: ${file(./chain_config.yml):private.gas}
       PRIVATE_CHAIN_GAS_PRICE: ${file(./chain_config.yml):private.gasPrice}
 
-  applyRelayByTxHashes_priToPub:
-    handler: handler.applyRelayByTxHashes_privateToPublic
+  applyRelayByTxHashesPriToPub:
+    handler: handler.applyRelayByTxHashesPriToPub
 
     # Function specific environts
     environment:
       PUBLIC_CHAIN_GAS: ${file(./chain_config.yml):public.gas}
       PUBLIC_CHAIN_GAS_PRICE: ${file(./chain_config.yml):public.gasPrice}
 
-  detectPendingRelay_pubToPri:
-    handler: handler.detectPendingRelay_publicToPrivate
+  detectPendingRelayPubToPri:
+    handler: handler.detectPendingRelayPubToPri
 
     # NOTICE 初期運用時は手動で実行
     # # Scheduling
@@ -118,8 +118,8 @@ functions:
       RELAY_FROM_BLOCK_NUM: 1
       APPLY_RELAY_FROM_BLOCK_NUM: 1
 
-  detectPendingRelay_priToPub:
-    handler: handler.detectPendingRelay_privateToPublic
+  detectPendingRelayPriToPub:
+    handler: handler.detectPendingRelayPriToPub
 
     # NOTICE 初期運用時は手動で実行
     # # Scheduling

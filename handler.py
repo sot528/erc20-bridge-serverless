@@ -10,25 +10,25 @@ db = boto3.resource('dynamodb')
 table = db.Table(os.environ['STAGE'] + 'ERC20BridgeInfo')
 
 
-def bridge_publicToPrivate(event, context):
+def bridgePubToPri(event, context):
     execute_bridge(_load_chain_config(True), table, _get_private_key(True))
 
 
-def bridge_privateToPublic(event, content):
+def bridgePriToPub(event, content):
     execute_bridge(_load_chain_config(False), table, _get_private_key(False))
 
 
-def applyRelayByTxHashes_privateToPublic(event, content):
+def applyRelayByTxHashesPriToPub(event, content):
     execute_apply_relay_by_tx_hashes(_load_chain_config(True), _get_private_key(
         True), event['relayTransactions'])
 
 
-def applyRelayByTxHashes_publicToPrivate(event, content):
+def applyRelayByTxHashesPubToPri(event, content):
     execute_apply_relay_by_tx_hashes(_load_chain_config(
         False), _get_private_key(False), event['relayTransactions'])
 
 
-def detectPendingRelay_publicToPrivate(event, content):
+def detectPendingRelayPubToPri(event, content):
     execute_detect_pending_relay(_load_chain_config(True),
                                  event['notificationEnabled'],
                                  int(os.environ['RELAY_FROM_BLOCK_NUM']),
@@ -36,7 +36,7 @@ def detectPendingRelay_publicToPrivate(event, content):
                                  int(os.environ['RELAY_IGNORE_SEC_THRESHOLD']))
 
 
-def detectPendingRelay_privateToPublic(event, content):
+def detectPendingRelayPriToPub(event, content):
     execute_detect_pending_relay(_load_chain_config(False),
                                  event['notificationEnabled'],
                                  int(os.environ['RELAY_FROM_BLOCK_NUM']),
