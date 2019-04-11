@@ -4,8 +4,7 @@ import requests
 
 
 def notify_pending_relays(public_to_private, pending_relays, relay_from_block_num, apply_relay_from_block_num):
-    """
-    未完了の入出金を通知
+    """ 未完了の入出金を通知
     """
     # valueの生成
     value = 'Relay取得開始ブロック数: {relay_from_block_num}\nApplyRelay取得開始ブロック数: {apply_relay_from_block_num}\n'.format(

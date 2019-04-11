@@ -6,6 +6,8 @@ ABI_JSON = '[{"name":"Relay","inputs":[{"type":"address","name":"_from","indexed
 
 
 def apply_relay(provider, contract_address, private_key, sender, recipient, amount, txHash, gas, gasPrice):
+    """ applyRelayの実行
+    """
     web3 = Web3(provider)
 
     contract = web3.eth.contract(
@@ -28,6 +30,8 @@ def apply_relay(provider, contract_address, private_key, sender, recipient, amou
 
 
 def get_relay_event_logs(provider, contract_address, from_block, to_block="latest"):
+    """ Relayイベントの取得
+    """
     web3 = Web3(provider)
 
     event_signature_hash = web3.sha3(
@@ -39,6 +43,8 @@ def get_relay_event_logs(provider, contract_address, from_block, to_block="lates
 
 
 def get_relay_event_log_by_tx_hash(provider, relay_transaction_hash):
+    """ トランザクションハッシュを指定してRelayイベントを取得
+    """
     web3 = Web3(provider)
 
     return web3.eth.getTransactionReceipt(
@@ -46,6 +52,8 @@ def get_relay_event_log_by_tx_hash(provider, relay_transaction_hash):
 
 
 def get_apply_relay_event_logs(provider, contract_address, from_block, to_block="latest"):
+    """ ApplyRelayイベントの取得
+    """
     web3 = Web3(provider)
 
     event_signature_hash = web3.sha3(
@@ -57,6 +65,8 @@ def get_apply_relay_event_logs(provider, contract_address, from_block, to_block=
 
 
 def parse_relay_event_log(relay_event_log):
+    """ Relayイベントのパース
+    """
     return {
         "sender": "0x" + relay_event_log['topics'][1].hex()[-40:],
         "recipient": "0x" + relay_event_log['topics'][2].hex()[-40:],
@@ -69,6 +79,8 @@ def parse_relay_event_log(relay_event_log):
 
 
 def parse_apply_relay_event_log(apply_relay_event_log):
+    """ ApplyRelayイベントのパース
+    """
     return {
         "relayTxHash": "0x" + apply_relay_event_log['data'][-64:]
     }
