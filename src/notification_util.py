@@ -3,7 +3,7 @@ import json
 import requests
 
 
-def notify_pending_relays(public_to_private, pending_relays, relay_from_block_num, apply_relay_from_block_num):
+def notify_pending_relays(is_deposit, pending_relays, relay_from_block_num, apply_relay_from_block_num):
     """ 未完了の入出金を通知
     """
     # valueの生成
@@ -13,7 +13,7 @@ def notify_pending_relays(public_to_private, pending_relays, relay_from_block_nu
         pending_relay_count=len(pending_relays))
 
     # 入出金の判定
-    if public_to_private:
+    if is_deposit:
         relay_type = "入金"
     else:
         relay_type = "出金"

@@ -19,7 +19,7 @@ def execute_bridge(chain_config, dynamo_table, private_key):
 
     # 処理を開始するブロックのオフセットを取得
     relay_block_offset = _get_block_offset(
-        chain_config['publicToPrivate'], dynamo_table)
+        chain_config['isDeposit'], dynamo_table)
 
     # 最新のブロック数を取得
     latest_block_num = _get_latest_block_number(provider_from)
@@ -58,7 +58,7 @@ def execute_bridge(chain_config, dynamo_table, private_key):
 
     # 次の入出金処理を開始する際のブロックのオフセットを更新
     _update_block_offset(
-        chain_config['publicToPrivate'], dynamo_table, latest_block_num + 1)
+        chain_config['isDeposit'], dynamo_table, latest_block_num + 1)
 
 
 def execute_apply_relay_by_tx_hashes(chain_config, private_key, relay_transactions):
@@ -144,7 +144,7 @@ def execute_detect_pending_relay(chain_config, notification_enabled, relay_from_
         # Slackに通知
         if notification_enabled:
             notification_util.notify_pending_relays(
-                chain_config['publicToPrivate'], pending_relays, relay_from_block_num, apply_relay_from_block_num)
+                chain_config['isDeposit'], pending_relays, relay_from_block_num, apply_relay_from_block_num)
     else:
         logger.info("No pending relay was detected.")
 
@@ -165,11 +165,11 @@ def _get_latest_block_number(provider):
     return web3.eth.blockNumber
 
 
-def _get_block_offset(public_to_private, table):
+def _get_block_offset(is_deposit, table):
     """ 入出金を開始するブロックのオフセットの取得
     """
     result = table.get_item(Key={
-        'key': _get_block_offset_key(public_to_private)
+        'key': _get_block_offset_key(is_deposit)
     })
 
     if result is None or 'Item' not in result:
@@ -178,21 +178,21 @@ def _get_block_offset(public_to_private, table):
     return int(result['Item']['value'])
 
 
-def _update_block_offset(public_to_private, table, offset):
+def _update_block_offset(is_deposit, table, offset):
     """ 入出金を開始するブロックのオフセットの更新
     """
     table.put_item(Item={
-        "key": _get_block_offset_key(public_to_private),
+        "key": _get_block_offset_key(is_deposit),
         "value": int(offset)
     })
 
 
-def _get_block_offset_key(public_to_private):
+def _get_block_offset_key(is_deposit):
     """ ブロックオフセットのテーブルのキーの取得
     """
-    if public_to_private:
+    if is_deposit:
         # 入金時
-        return "public_to_private_offset"
+        return "deposit_offset"
     else:
         # 出金時
-        return "private_to_public_offset"
+        return "withdraw_offset"

@@ -59,8 +59,8 @@ provider:
 
 # Lambda functions
 functions:
-  bridgePubToPri:
-    handler: handler.bridgePubToPri
+  deposit:
+    handler: handler.deposit
 
     # # Scheduling
     # events:
@@ -71,8 +71,8 @@ functions:
       PRIVATE_CHAIN_GAS: ${file(./chain_config.yml):private.gas}
       PRIVATE_CHAIN_GAS_PRICE: ${file(./chain_config.yml):private.gasPrice}
 
-  bridgePriToPub:
-    handler: handler.bridgePriToPub
+  withdraw:
+    handler: handler.withdraw
 
     # NOTICE 初期運用時は手動で実行
     # # Scheduling
@@ -84,24 +84,24 @@ functions:
       PUBLIC_CHAIN_GAS: ${file(./chain_config.yml):public.gas}
       PUBLIC_CHAIN_GAS_PRICE: ${file(./chain_config.yml):public.gasPrice}
 
-  applyRelayByTxHashesPubToPri:
-    handler: handler.applyRelayByTxHashesPubToPri
+  applyRelayForDeposit:
+    handler: handler.applyRelayForDeposit
 
     # Function specific environts
     environment:
       PRIVATE_CHAIN_GAS: ${file(./chain_config.yml):private.gas}
       PRIVATE_CHAIN_GAS_PRICE: ${file(./chain_config.yml):private.gasPrice}
 
-  applyRelayByTxHashesPriToPub:
-    handler: handler.applyRelayByTxHashesPriToPub
+  applyRelayForWithdraw:
+    handler: handler.applyRelayForWithdraw
 
     # Function specific environts
     environment:
       PUBLIC_CHAIN_GAS: ${file(./chain_config.yml):public.gas}
       PUBLIC_CHAIN_GAS_PRICE: ${file(./chain_config.yml):public.gasPrice}
 
-  detectPendingRelayPubToPri:
-    handler: handler.detectPendingRelayPubToPri
+  detectPendingDeposit:
+    handler: handler.detectPendingDeposit
 
     # NOTICE 初期運用時は手動で実行
     # # Scheduling
@@ -118,8 +118,8 @@ functions:
       RELAY_FROM_BLOCK_NUM: 1
       APPLY_RELAY_FROM_BLOCK_NUM: 1
 
-  detectPendingRelayPriToPub:
-    handler: handler.detectPendingRelayPriToPub
+  detectPendingWithdraw:
+    handler: handler.detectPendingWithdraw
 
     # NOTICE 初期運用時は手動で実行
     # # Scheduling

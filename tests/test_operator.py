@@ -10,7 +10,7 @@ from src.operator import execute_detect_pending_relay
 from src.contract import parse_relay_event_log
 
 CHAIN_CONFIG = {
-    'publicToPrivate': True,
+    'isDeposit': True,
     'chainRpcUrlFrom': 'http://example.com',
     'bridgeContractAddressFrom': '0x' + 'a' * 40,
     'chainRpcUrlTo': 'http://example.com',
@@ -64,7 +64,7 @@ class TestOperator(TestCase):
 
         # Assert DynamoDB's value
         get_item_result = self.db_table.get_item(Key={
-            'key': "public_to_private_offset"
+            'key': "deposit_offset"
         })
         self.assertEqual(
             int(get_item_result['Item']['value']), LATEST_BLOCK_NUMBER + 1)

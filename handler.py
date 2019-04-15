@@ -10,33 +10,33 @@ db = boto3.resource('dynamodb')
 table = db.Table(os.environ['STAGE'] + 'ERC20BridgeInfo')
 
 
-def bridgePubToPri(event, context):
+def deposit(event, context):
     """ 入金処理の実行
     """
     execute_bridge(_load_chain_config(True), table, _get_private_key(True))
 
 
-def bridgePriToPub(event, content):
+def withdraw(event, content):
     """ 出金処理の実行
     """
     execute_bridge(_load_chain_config(False), table, _get_private_key(False))
 
 
-def applyRelayByTxHashesPubToPri(event, content):
+def applyRelayForDeposit(event, content):
     """ Relayイベントのトランザクションハッシュを指定して入金処理を実行(未完了の入金処理をリトライする際に利用)
     """
     execute_apply_relay_by_tx_hashes(_load_chain_config(
         True), _get_private_key(True), event['relayTransactions'])
 
 
-def applyRelayByTxHashesPriToPub(event, content):
+def applyRelayForWithdraw(event, content):
     """ Relayイベントのトランザクションハッシュを指定して出金処理を実行(未完了の出金処理をリトライする際に利用)
     """
     execute_apply_relay_by_tx_hashes(_load_chain_config(False), _get_private_key(
         False), event['relayTransactions'])
 
 
-def detectPendingRelayPubToPri(event, content):
+def detectPendingDeposit(event, content):
     """ 未完了の入金処理の検出
     """
     execute_detect_pending_relay(_load_chain_config(True),
@@ -46,7 +46,7 @@ def detectPendingRelayPubToPri(event, content):
                                  int(os.environ['RELAY_IGNORE_SEC_THRESHOLD']))
 
 
-def detectPendingRelayPriToPub(event, content):
+def detectPendingWithdraw(event, content):
     """ 未完了の出金処理の検出
     """
     execute_detect_pending_relay(_load_chain_config(False),
@@ -56,13 +56,13 @@ def detectPendingRelayPriToPub(event, content):
                                  int(os.environ['RELAY_IGNORE_SEC_THRESHOLD']))
 
 
-def _load_chain_config(public_to_private):
+def _load_chain_config(is_deposit):
     """ チェーン情報の取得
     """
-    if public_to_private:
+    if is_deposit:
         # 入金時
         return {
-            'publicToPrivate': True,
+            'isDeposit': True,
             'chainRpcUrlFrom': os.environ['PUBLIC_CHAIN_RPC_URL'],
             'bridgeContractAddressFrom': os.environ['PUBLIC_CHAIN_BRIDGE_CONTRACT_ADDRESS'],
             'chainRpcUrlTo': os.environ['PRIVATE_CHAIN_RPC_URL'],
@@ -73,7 +73,7 @@ def _load_chain_config(public_to_private):
     else:
         # 出金時
         return {
-            'publicToPrivate': False,
+            'isDeposit': False,
             'chainRpcUrlFrom': os.environ['PRIVATE_CHAIN_RPC_URL'],
             'bridgeContractAddressFrom': os.environ['PRIVATE_CHAIN_BRIDGE_CONTRACT_ADDRESS'],
             'chainRpcUrlTo': os.environ['PUBLIC_CHAIN_RPC_URL'],
@@ -83,10 +83,10 @@ def _load_chain_config(public_to_private):
         }
 
 
-def _get_private_key(public_to_private):
+def _get_private_key(is_deposit):
     """ プライベートキーの取得
     """
-    if public_to_private:
+    if is_deposit:
         # 入金時
         name = os.environ['STAGE'] + 'ssmBridgeOperatorPrivateChainPrivateKey'
     else:
