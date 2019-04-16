@@ -1,6 +1,5 @@
 from unittest import TestCase
 from unittest.mock import patch, MagicMock, call, ANY
-from .context import src
 from .helper import create_erc20_bridge_info_db_table
 from .mock_data.relay_log_data import relay_event_logs
 from .mock_data.apply_relay_log_data import apply_relay_event_logs

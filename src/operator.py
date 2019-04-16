@@ -1,4 +1,3 @@
-import os
 import logging
 from datetime import datetime
 from web3 import Web3

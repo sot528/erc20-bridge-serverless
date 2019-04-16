@@ -1,5 +1,4 @@
 import os
-import json
 import boto3
 from src.operator import execute_bridge
 from src.operator import execute_apply_relay_by_tx_hashes
