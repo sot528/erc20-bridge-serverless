@@ -22,7 +22,8 @@ source venv/bin/activate
 # pip
 pip install -r requirements.txt
 
-# envrc cp .envrc.sample .envrc
+# envrc
+cp .envrc.sample .envrc
 vi .envrc
 direnv allow
 ```
@@ -48,7 +49,7 @@ java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb
 yarn test
 ```
 
-# Regist SSM Parameters
+# Register SSM Parameters
 
 ```bash
 script/register_ssm_parameters.sh
