@@ -60,7 +60,7 @@ provider:
 # Lambda functions
 functions:
   deposit:
-    handler: handler.deposit
+    handler: src/handlers/deposit.handler
 
     # # Scheduling
     # events:
@@ -72,7 +72,7 @@ functions:
       PRIVATE_CHAIN_GAS_PRICE: ${file(./chain_config.yml):private.gasPrice}
 
   withdraw:
-    handler: handler.withdraw
+    handler: src/handlers/withdraw.handler
 
     # NOTICE 初期運用時は手動で実行
     # # Scheduling
@@ -85,7 +85,7 @@ functions:
       PUBLIC_CHAIN_GAS_PRICE: ${file(./chain_config.yml):public.gasPrice}
 
   applyRelayForDeposit:
-    handler: handler.applyRelayForDeposit
+    handler: src/handlers/apply_relay_for_deposit.handler
 
     # Function specific environments
     environment:
@@ -93,7 +93,7 @@ functions:
       PRIVATE_CHAIN_GAS_PRICE: ${file(./chain_config.yml):private.gasPrice}
 
   applyRelayForWithdraw:
-    handler: handler.applyRelayForWithdraw
+    handler: src/handlers/apply_relay_for_withdraw.handler
 
     # Function specific environments
     environment:
@@ -101,7 +101,7 @@ functions:
       PUBLIC_CHAIN_GAS_PRICE: ${file(./chain_config.yml):public.gasPrice}
 
   detectPendingDeposit:
-    handler: handler.detectPendingDeposit
+    handler: src/handlers/detect_pending_deposit.handler
 
     # NOTICE 初期運用時は手動で実行
     # # Scheduling
@@ -119,7 +119,7 @@ functions:
       APPLY_RELAY_FROM_BLOCK_NUM: 1
 
   detectPendingWithdraw:
-    handler: handler.detectPendingWithdraw
+    handler: src/handlers/detect_pending_withdraw.handler
 
     # NOTICE 初期運用時は手動で実行
     # # Scheduling
