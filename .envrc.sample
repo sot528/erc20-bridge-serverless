@@ -16,9 +16,9 @@ export VPC_SUBNET_ID=xxxxx
 export VPC_SECURITY_GROUP_ID=xxxxx
 
 
-## SSMパラメータ
-export PUBLIC_CHAIN_PRIVATE_KEY_SSM_NAME=xxxxx
-export PRIVATE_CHAIN_PRIVATE_KEY_SSM_NAME=xxxxx
+## SSMパラメータの値
+export OPERATOR_PUBLIC_CHAIN_PRIVATE_KEY=xxxxx
+export OPERATOR_PRIVATE_CHAIN_PRIVATE_KEY=xxxxx
 
 
 # --- AWS ---
