@@ -66,7 +66,7 @@ functions:
     # events:
     #   - schedule: rate(1 minutes)
 
-    # Function specific environts
+    # Function specific environments
     environment:
       PRIVATE_CHAIN_GAS: ${file(./chain_config.yml):private.gas}
       PRIVATE_CHAIN_GAS_PRICE: ${file(./chain_config.yml):private.gasPrice}
@@ -79,7 +79,7 @@ functions:
     # events:
     #   - schedule: rate(1 minutes)
 
-    # Function specific environts
+    # Function specific environments
     environment:
       PUBLIC_CHAIN_GAS: ${file(./chain_config.yml):public.gas}
       PUBLIC_CHAIN_GAS_PRICE: ${file(./chain_config.yml):public.gasPrice}
@@ -87,7 +87,7 @@ functions:
   applyRelayForDeposit:
     handler: handler.applyRelayForDeposit
 
-    # Function specific environts
+    # Function specific environments
     environment:
       PRIVATE_CHAIN_GAS: ${file(./chain_config.yml):private.gas}
       PRIVATE_CHAIN_GAS_PRICE: ${file(./chain_config.yml):private.gasPrice}
@@ -95,7 +95,7 @@ functions:
   applyRelayForWithdraw:
     handler: handler.applyRelayForWithdraw
 
-    # Function specific environts
+    # Function specific environments
     environment:
       PUBLIC_CHAIN_GAS: ${file(./chain_config.yml):public.gas}
       PUBLIC_CHAIN_GAS_PRICE: ${file(./chain_config.yml):public.gasPrice}
@@ -111,7 +111,7 @@ functions:
     #     input:
     #       notificationEnabled: true
 
-    # Function specific environts
+    # Function specific environments
     environment:
       SLACK_NOTIFICATION_URL: ${ssm:${env:ALIS_APP_ID}ssmSlackNotificationUrl}
       RELAY_IGNORE_SEC_THRESHOLD: 0
@@ -129,7 +129,7 @@ functions:
     #     input:
     #       notificationEnabled: true
 
-    # Function specific environts
+    # Function specific environments
     environment:
       SLACK_NOTIFICATION_URL: ${ssm:${env:ALIS_APP_ID}ssmSlackNotificationUrl}
       RELAY_IGNORE_SEC_THRESHOLD: 0
