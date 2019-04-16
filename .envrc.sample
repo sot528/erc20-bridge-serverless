@@ -8,8 +8,13 @@ export ALIS_APP_ID=xxxxx
 # --- ERC20 Bridge ---
 
 ## VPC
+### プライベートチェーンと同一のVPC内にLambdaを配置する必要がある
+#### PrivateSubNet1を指定
 export VPC_SUBNET_ID=xxxxx
+
+#### PrivateLambdaSecurityGroupを指定
 export VPC_SECURITY_GROUP_ID=xxxxx
+
 
 ## SSMパラメータ
 export PUBLIC_CHAIN_PRIVATE_KEY_SSM_NAME=xxxxx
