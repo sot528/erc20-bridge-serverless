@@ -84,16 +84,16 @@ functions:
       PUBLIC_CHAIN_GAS: ${file(./chain_config.yml):public.gas}
       PUBLIC_CHAIN_GAS_PRICE: ${file(./chain_config.yml):public.gasPrice}
 
-  applyRelayForDeposit:
-    handler: src/handlers/apply_relay_for_deposit.handler
+  retryDeposit:
+    handler: src/handlers/retry_deposit.handler
 
     # Function specific environments
     environment:
       PRIVATE_CHAIN_GAS: ${file(./chain_config.yml):private.gas}
       PRIVATE_CHAIN_GAS_PRICE: ${file(./chain_config.yml):private.gasPrice}
 
-  applyRelayForWithdraw:
-    handler: src/handlers/apply_relay_for_withdraw.handler
+  retryWithdraw:
+    handler: src/handlers/retry_withdraw.handler
 
     # Function specific environments
     environment:
