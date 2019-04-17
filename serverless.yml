@@ -57,6 +57,26 @@ provider:
       - ${env:VPC_SECURITY_GROUP_ID}
 
 
+# Package
+package:
+  include:
+    - src/**
+  exclude:
+    - .circleci/**
+    - .envrc*
+    - .git/**
+    - .git*
+    - .vscode/**
+    - node_modules/**
+    - package.json
+    - script/**
+    - tests/**
+    - venv/**
+    - yarn.lock
+    - README.md
+  individually: true
+
+
 # Lambda functions
 functions:
   deposit:
