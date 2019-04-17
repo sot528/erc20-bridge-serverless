@@ -61,6 +61,8 @@ provider:
 functions:
   deposit:
     handler: src/handlers/deposit.handler
+    layers:
+      - {Ref: PythonRequirementsLambdaLayer}
 
     # # Scheduling
     # events:
@@ -73,6 +75,8 @@ functions:
 
   withdraw:
     handler: src/handlers/withdraw.handler
+    layers:
+      - {Ref: PythonRequirementsLambdaLayer}
 
     # NOTICE 初期運用時は手動で実行
     # # Scheduling
@@ -86,6 +90,8 @@ functions:
 
   retryDeposit:
     handler: src/handlers/retry_deposit.handler
+    layers:
+      - {Ref: PythonRequirementsLambdaLayer}
 
     # Function specific environments
     environment:
@@ -94,6 +100,8 @@ functions:
 
   retryWithdraw:
     handler: src/handlers/retry_withdraw.handler
+    layers:
+      - {Ref: PythonRequirementsLambdaLayer}
 
     # Function specific environments
     environment:
@@ -102,6 +110,8 @@ functions:
 
   detectPendingDeposit:
     handler: src/handlers/detect_pending_deposit.handler
+    layers:
+      - {Ref: PythonRequirementsLambdaLayer}
 
     # NOTICE 初期運用時は手動で実行
     # # Scheduling
@@ -120,6 +130,8 @@ functions:
 
   detectPendingWithdraw:
     handler: src/handlers/detect_pending_withdraw.handler
+    layers:
+      - {Ref: PythonRequirementsLambdaLayer}
 
     # NOTICE 初期運用時は手動で実行
     # # Scheduling
@@ -166,3 +178,4 @@ resources:
 custom:
   pythonRequirements:
     dockerizePip: true
+    layer: true
