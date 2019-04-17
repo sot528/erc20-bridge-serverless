@@ -1,5 +1,18 @@
 import boto3
 
+CHAIN_CONFIG = {
+    'isDeposit': True,
+    'chainRpcUrlFrom': 'http://example.com',
+    'bridgeContractAddressFrom': '0x' + 'a' * 40,
+    'chainRpcUrlTo': 'http://example.com',
+    'bridgeContractAddressTo': '0x' + 'b' * 40,
+    'gas': '5500000',
+    'gasPrice': '1000000000'
+}
+
+PRIVATE_KEY = "0x" + "c" * 64
+
+
 dynamodb_client = boto3.resource(
     'dynamodb',
     endpoint_url='http://localhost:8000/',
