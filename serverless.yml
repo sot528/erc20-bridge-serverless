@@ -74,6 +74,8 @@ package:
     - venv/**
     - yarn.lock
     - README.md
+    - requirements.txt
+    - chain_config.yml
   individually: true
 
 
