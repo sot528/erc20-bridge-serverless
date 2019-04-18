@@ -1,0 +1,13 @@
+# Public chain
+public:
+  rpcUrl: ${ssm:${env:ALIS_APP_ID}ssmPublicChainOperationUrl}
+  bridgeContractAddress: ${ssm:${env:ALIS_APP_ID}ssmPublicChainBridgeAddress}
+  gas: 5500000
+  gasPrice: 1000000000
+
+# Private chain
+private:
+  rpcUrl: ${ssm:${env:ALIS_APP_ID}ssmPrivateChainOperationUrl}
+  bridgeContractAddress: ${ssm:${env:ALIS_APP_ID}ssmPrivateChainBridgeAddress}
+  gas: 3500000 # NOTICE プライベートチェーン側もgasは指定しないとトランザクションに失敗する
+  gasPrice: 0

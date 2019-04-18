@@ -1,0 +1,203 @@
+# Service name
+service: erc20-bridge-serverless
+
+# Serverless framework version
+frameworkVersion: "=1.40.0"
+
+# Provider
+provider:
+  name: aws
+  runtime: python3.7
+
+  stage: ${env:ALIS_APP_ID}
+  region: ${env:AWS_DEFAULT_REGION}
+
+  # Additional statements of the Lambda's IAM Role
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - ssm:GetParameter
+        - kms:ListKeys
+        - kms:ListAliases
+        - kms:DescribeKey
+        - kms:ListKeyPolicies
+        - kms:GetKeyPolicy
+        - kms:GetKeyRotationStatus
+        - iam:ListUsers
+        - iam:ListRoles
+      Resource: "*"
+    - Effect: Allow
+      Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.stage}ERC20BridgeInfo"
+
+  # Function common environment variables
+  environment:
+    ALIS_APP_ID: ${self:provider.stage}
+
+    # Public chain
+    PUBLIC_CHAIN_RPC_URL: ${file(./chain_config.yml):public.rpcUrl}
+    PUBLIC_CHAIN_BRIDGE_CONTRACT_ADDRESS: ${file(./chain_config.yml):public.bridgeContractAddress}
+
+    # Private chain
+    PRIVATE_CHAIN_RPC_URL: ${file(./chain_config.yml):private.rpcUrl}
+    PRIVATE_CHAIN_BRIDGE_CONTRACT_ADDRESS: ${file(./chain_config.yml):private.bridgeContractAddress}
+
+  # VPC
+  vpc:
+    subnetIds:
+      - ${env:VPC_SUBNET_ID}
+    securityGroupIds:
+      - ${env:VPC_SECURITY_GROUP_ID}
+
+
+# Package
+package:
+  include:
+    - src/**
+  exclude:
+    - .circleci/**
+    - .envrc*
+    - .git/**
+    - .git*
+    - .vscode/**
+    - node_modules/**
+    - package.json
+    - script/**
+    - tests/**
+    - venv/**
+    - yarn.lock
+    - README.md
+    - requirements.txt
+    - chain_config.yml
+  individually: true
+
+
+# Lambda functions
+functions:
+  deposit:
+    handler: src/handlers/deposit.handler
+    layers:
+      - {Ref: PythonRequirementsLambdaLayer}
+
+    # # Scheduling
+    # events:
+    #   - schedule: rate(1 minutes)
+
+    # Function specific environments
+    environment:
+      PRIVATE_CHAIN_GAS: ${file(./chain_config.yml):private.gas}
+      PRIVATE_CHAIN_GAS_PRICE: ${file(./chain_config.yml):private.gasPrice}
+
+  withdraw:
+    handler: src/handlers/withdraw.handler
+    layers:
+      - {Ref: PythonRequirementsLambdaLayer}
+
+    # NOTICE 初期運用時は手動で実行
+    # # Scheduling
+    # events:
+    #   - schedule: rate(1 minutes)
+
+    # Function specific environments
+    environment:
+      PUBLIC_CHAIN_GAS: ${file(./chain_config.yml):public.gas}
+      PUBLIC_CHAIN_GAS_PRICE: ${file(./chain_config.yml):public.gasPrice}
+
+  retryDeposit:
+    handler: src/handlers/retry_deposit.handler
+    layers:
+      - {Ref: PythonRequirementsLambdaLayer}
+
+    # Function specific environments
+    environment:
+      PRIVATE_CHAIN_GAS: ${file(./chain_config.yml):private.gas}
+      PRIVATE_CHAIN_GAS_PRICE: ${file(./chain_config.yml):private.gasPrice}
+
+  retryWithdraw:
+    handler: src/handlers/retry_withdraw.handler
+    layers:
+      - {Ref: PythonRequirementsLambdaLayer}
+
+    # Function specific environments
+    environment:
+      PUBLIC_CHAIN_GAS: ${file(./chain_config.yml):public.gas}
+      PUBLIC_CHAIN_GAS_PRICE: ${file(./chain_config.yml):public.gasPrice}
+
+  detectPendingDeposit:
+    handler: src/handlers/detect_pending_deposit.handler
+    layers:
+      - {Ref: PythonRequirementsLambdaLayer}
+
+    # NOTICE 初期運用時は手動で実行
+    # # Scheduling
+    # events:
+    #   - schedule:
+    #     rate: rate(1 hours)
+    #     input:
+    #       notificationEnabled: true
+
+    # Function specific environments
+    environment:
+      SLACK_NOTIFICATION_URL: ${ssm:${env:ALIS_APP_ID}ssmSlackNotificationUrl}
+      RELAY_IGNORE_SEC_THRESHOLD: 0
+      RELAY_FROM_BLOCK_NUM: 1
+      APPLY_RELAY_FROM_BLOCK_NUM: 1
+
+  detectPendingWithdraw:
+    handler: src/handlers/detect_pending_withdraw.handler
+    layers:
+      - {Ref: PythonRequirementsLambdaLayer}
+
+    # NOTICE 初期運用時は手動で実行
+    # # Scheduling
+    # events:
+    #   - schedule:
+    #     rate: rate(1 hours)
+    #     input:
+    #       notificationEnabled: true
+
+    # Function specific environments
+    environment:
+      SLACK_NOTIFICATION_URL: ${ssm:${env:ALIS_APP_ID}ssmSlackNotificationUrl}
+      RELAY_IGNORE_SEC_THRESHOLD: 0
+      RELAY_FROM_BLOCK_NUM: 1
+      APPLY_RELAY_FROM_BLOCK_NUM: 1
+
+
+# Plugins
+plugins:
+  - serverless-python-requirements
+
+
+# Resources
+resources:
+  Resources:
+    # DynamoDB
+    erc20BridgeInfo:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy: Retain
+      Properties:
+        TableName: ${self:provider.stage}ERC20BridgeInfo
+        AttributeDefinitions:
+          - AttributeName: key
+            AttributeType: S
+        KeySchema:
+          - AttributeName: key
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        PointInTimeRecoverySpecification:
+          PointInTimeRecoveryEnabled: true
+
+
+# Custom settings
+custom:
+  pythonRequirements:
+    dockerizePip: true
+    layer: true

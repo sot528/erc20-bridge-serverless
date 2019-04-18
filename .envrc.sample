@@ -1,0 +1,28 @@
+# --- ALIS ---
+
+## ALISのアプリケーションID
+## すべてのサブシステムで同じ値を使う必要がある
+export ALIS_APP_ID=xxxxx
+
+
+# --- ERC20 Bridge ---
+
+## VPC
+### プライベートチェーンと同一のVPC内にLambdaを配置する必要がある
+#### PrivateSubNet1を指定
+export VPC_SUBNET_ID=xxxxx
+
+#### PrivateLambdaSecurityGroupを指定
+export VPC_SECURITY_GROUP_ID=xxxxx
+
+
+## SSMパラメータの値
+export OPERATOR_PUBLIC_CHAIN_PRIVATE_KEY=xxxxx
+export OPERATOR_PRIVATE_CHAIN_PRIVATE_KEY=xxxxx
+
+
+# --- AWS ---
+
+export AWS_DEFAULT_REGION=ap-northeast-1
+export AWS_ACCESS_KEY_ID=AKIAJZCGSXXXXXXXXXX
+export AWS_SECRET_ACCESS_KEY=iU6/q6ls5i5pDBPxxxxxxxxxxxxxxxxxxxx
