@@ -39,7 +39,7 @@ provider:
 
   # Function common environment variables
   environment:
-    STAGE: ${self:provider.stage}
+    ALIS_APP_ID: ${self:provider.stage}
 
     # Public chain
     PUBLIC_CHAIN_RPC_URL: ${file(./chain_config.yml):public.rpcUrl}

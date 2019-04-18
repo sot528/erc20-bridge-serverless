@@ -1,5 +1,5 @@
 import os
-os.environ['STAGE'] = 'test'
+os.environ['ALIS_APP_ID'] = 'test'
 
 from src.handlers.helpers import helper
 from unittest import TestCase

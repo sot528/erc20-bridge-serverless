@@ -5,7 +5,7 @@ import logging
 
 # DynamoDB
 _db = boto3.resource('dynamodb')
-db_table = _db.Table(os.environ['STAGE'] + 'ERC20BridgeInfo')
+db_table = _db.Table(os.environ['ALIS_APP_ID'] + 'ERC20BridgeInfo')
 
 
 def load_chain_config(is_deposit):
@@ -40,10 +40,10 @@ def get_private_key(is_deposit):
     """
     if is_deposit:
         # 入金時
-        name = os.environ['STAGE'] + 'ssmBridgeOperatorPrivateChainPrivateKey'
+        name = os.environ['ALIS_APP_ID'] + 'ssmBridgeOperatorPrivateChainPrivateKey'
     else:
         # 出金時
-        name = os.environ['STAGE'] + 'ssmBridgeOperatorPublicChainPrivateKey'
+        name = os.environ['ALIS_APP_ID'] + 'ssmBridgeOperatorPublicChainPrivateKey'
 
     return boto3.client('ssm').get_parameter(
         Name=name,
