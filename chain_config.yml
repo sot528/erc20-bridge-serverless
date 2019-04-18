@@ -9,5 +9,5 @@ public:
 private:
   rpcUrl: ${ssm:${env:ALIS_APP_ID}ssmPrivateChainOperationUrl}
   bridgeContractAddress: ${ssm:${env:ALIS_APP_ID}ssmPrivateChainBridgeAddress}
-  gas: 3500000
-  gasPrice: 2100000000000
+  gas: 3500000 # NOTICE プライベートチェーン側もgasは指定しないとトランザクションに失敗する
+  gasPrice: 0
