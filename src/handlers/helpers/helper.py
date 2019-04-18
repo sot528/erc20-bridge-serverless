@@ -3,9 +3,11 @@ import boto3
 import logging
 
 
-# DynamoDB
-_db = boto3.resource('dynamodb')
-db_table = _db.Table(os.environ['ALIS_APP_ID'] + 'ERC20BridgeInfo')
+def get_db_table():
+    """ DynamoDBのテーブル取得
+    """
+    db = boto3.resource('dynamodb')
+    return db.Table(os.environ['ALIS_APP_ID'] + 'ERC20BridgeInfo')
 
 
 def load_chain_config(is_deposit):
