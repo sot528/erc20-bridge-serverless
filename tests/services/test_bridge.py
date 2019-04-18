@@ -53,3 +53,10 @@ class TestBridge(TestCase):
         })
         self.assertEqual(
             int(get_item_result['Item']['value']), LATEST_BLOCK_NUMBER + 1)
+
+    def test_ok_get_block_offset_key(self):
+        deposit_block_offset = bridge._get_block_offset_key(True)
+        self.assertEqual(deposit_block_offset, 'deposit_offset')
+
+        withdraw_block_offset = bridge._get_block_offset_key(False)
+        self.assertEqual(withdraw_block_offset, 'withdraw_offset')
