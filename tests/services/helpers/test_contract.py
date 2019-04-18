@@ -10,11 +10,10 @@ from tests.mock_data import mock_relay_transaction_receipt
 
 class TestContract(TestCase):
 
-    @patch('web3.eth.Eth.getTransactionCount')
     @patch('web3.eth.Account.signTransaction')
     @patch('web3.eth.Eth.sendRawTransaction')
     @patch('web3.eth.Eth.contract')
-    def test_ok_apply_relay(self, mock_applyRelay, mock_sendRawTransaction, mock_signTransaction, mock_getTransactionCount):
+    def test_ok_apply_relay(self, mock_applyRelay, mock_sendRawTransaction, mock_signTransaction):
         provider = Web3.HTTPProvider('http://example.com')
         contract_address = helper.CHAIN_CONFIG['bridgeContractAddressTo']
         private_key = helper.PRIVATE_KEY
@@ -24,16 +23,12 @@ class TestContract(TestCase):
         tx_hash = '0x' + 'c' * 64
         gas = 5500000
         gas_price = 1000000000
-        transaction_count = 10
-
+        nonce = 10
         web3 = Web3(provider)
-
-        # Setup mock
-        mock_getTransactionCount.return_value = transaction_count
 
         # Execute apply_relay
         contract.apply_relay(provider, contract_address, private_key,
-                             sender, recipient, amount, tx_hash, gas, gas_price)
+                             sender, recipient, amount, tx_hash, gas, gas_price, nonce)
 
         # Assert call
         mock_applyRelay.return_value.functions.applyRelay.assert_called_once_with(
@@ -44,7 +39,7 @@ class TestContract(TestCase):
         )
 
         mock_applyRelay.return_value.functions.applyRelay.return_value.buildTransaction.assert_called_once_with({
-            'nonce': transaction_count,
+            'nonce': nonce,
             'gas': hex(gas),
             'gasPrice': hex(gas_price)
         })

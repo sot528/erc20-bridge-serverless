@@ -1,4 +1,5 @@
 from web3 import Web3
+from eth_account import Account
 from src.services.helpers import contract
 from src.services.helpers.logger import logger
 
@@ -23,6 +24,10 @@ def execute(chain_config, dynamo_table, private_key):
             latest_block_num=latest_block_num, relay_block_offset=relay_block_offset))
         return
 
+    # nonce設定のためトランザクション数の取得
+    nonce = _get_transaction_count(
+        provider_to, Account.privateKeyToAccount(private_key).address)
+
     # Relayイベントを取得
     relay_event_logs = contract.get_relay_event_logs(
         provider_from, chain_config['bridgeContractAddressFrom'], relay_block_offset, latest_block_num)
@@ -42,7 +47,9 @@ def execute(chain_config, dynamo_table, private_key):
             response = contract.apply_relay(provider_to, chain_config['bridgeContractAddressTo'],
                                             private_key,
                                             parsed_event['sender'], parsed_event['recipient'], parsed_event['amount'], parsed_event['txHash'],
-                                            chain_config['gas'], chain_config['gasPrice'])
+                                            chain_config['gas'], chain_config['gasPrice'], nonce)
+            # nonceのカウントアップ
+            nonce += 1
 
             logger.info(
                 '[ApplyRelay] txHash={txHash}, relayEventTxHash={relayEventTxHash}'.format(txHash=response, relayEventTxHash=parsed_event['txHash']))
@@ -55,6 +62,13 @@ def execute(chain_config, dynamo_table, private_key):
     # 次の入出金処理を開始する際のブロックのオフセットを更新
     _update_block_offset(
         chain_config['isDeposit'], dynamo_table, latest_block_num + 1)
+
+
+def _get_transaction_count(provider, account):
+    """ トランザクション数の取得
+    """
+    web3 = Web3(provider)
+    return web3.eth.getTransactionCount(web3.toChecksumAddress(account))
 
 
 def _get_latest_block_number(provider):

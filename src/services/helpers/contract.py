@@ -1,13 +1,12 @@
 import json
 from web3 import Web3
-from eth_account import Account
 
 # ABIの読み込み
 with open('abi/Bridge.json', 'rt') as file:
     BRIDGE_ABI = json.loads(file.read())
 
 
-def apply_relay(provider, contract_address, private_key, sender, recipient, amount, txHash, gas, gasPrice):
+def apply_relay(provider, contract_address, private_key, sender, recipient, amount, txHash, gas, gasPrice, nonce):
     """ applyRelayの実行
     """
     if BRIDGE_ABI is None:
@@ -17,9 +16,6 @@ def apply_relay(provider, contract_address, private_key, sender, recipient, amou
 
     contract = web3.eth.contract(
         web3.toChecksumAddress(contract_address), abi=BRIDGE_ABI)
-
-    account = Account.privateKeyToAccount(private_key).address
-    nonce = web3.eth.getTransactionCount(account)
 
     transaction = contract.functions.applyRelay(web3.toChecksumAddress(sender), web3.toChecksumAddress(recipient), amount, txHash).buildTransaction({
         'nonce': nonce,
