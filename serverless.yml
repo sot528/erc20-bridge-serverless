@@ -142,9 +142,9 @@ functions:
     # # Scheduling
     # events:
     #   - schedule:
-    #     rate: rate(1 hours)
-    #     input:
-    #       notificationEnabled: true
+    #       rate: rate(1 hours)
+    #       input:
+    #         notificationEnabled: true
 
     # Function specific environments
     environment:
@@ -162,9 +162,9 @@ functions:
     # # Scheduling
     # events:
     #   - schedule:
-    #     rate: rate(1 hours)
-    #     input:
-    #       notificationEnabled: true
+    #       rate: rate(1 hours)
+    #       input:
+    #         notificationEnabled: true
 
     # Function specific environments
     environment:
