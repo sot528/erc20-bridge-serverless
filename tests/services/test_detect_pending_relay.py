@@ -1,3 +1,4 @@
+from web3 import Web3
 from unittest import TestCase
 from unittest.mock import patch, MagicMock, call, ANY
 from src.services import detect_pending_relay
@@ -21,6 +22,14 @@ class TestDetectPendingRelay(TestCase):
         detect_pending_relay.execute(helper.CHAIN_CONFIG, True, 1, 1, 0)
 
         # Assert call count and parameters
+        mock_get_apply_relay_event_logs_args = mock_get_apply_relay_event_logs.call_args[0]
+        self.assertEqual(
+            mock_get_apply_relay_event_logs_args[0].endpoint_uri, helper.CHAIN_CONFIG['chainRpcUrlTo'])
+        self.assertEqual(
+            mock_get_apply_relay_event_logs_args[1], helper.CHAIN_CONFIG['bridgeContractAddressTo'])
+        self.assertEqual(
+            mock_get_apply_relay_event_logs_args[2], 1)
+
         parsed_relay_event = contract.parse_relay_event_log(
             mock_relay_log.data[2])
         mock_notify_pending_relays.assert_called_once_with(True, [{'sender': parsed_relay_event['sender'],
