@@ -83,6 +83,7 @@ package:
 functions:
   deposit:
     handler: src/handlers/deposit.handler
+    timeout: 60
     layers:
       - {Ref: PythonRequirementsLambdaLayer}
 
@@ -97,6 +98,7 @@ functions:
 
   withdraw:
     handler: src/handlers/withdraw.handler
+    timeout: 60
     layers:
       - {Ref: PythonRequirementsLambdaLayer}
 
@@ -112,6 +114,7 @@ functions:
 
   retryDeposit:
     handler: src/handlers/retry_deposit.handler
+    timeout: 60
     layers:
       - {Ref: PythonRequirementsLambdaLayer}
 
@@ -122,6 +125,7 @@ functions:
 
   retryWithdraw:
     handler: src/handlers/retry_withdraw.handler
+    timeout: 60
     layers:
       - {Ref: PythonRequirementsLambdaLayer}
 
@@ -132,6 +136,7 @@ functions:
 
   detectPendingDeposit:
     handler: src/handlers/detect_pending_deposit.handler
+    timeout: 60
     layers:
       - {Ref: PythonRequirementsLambdaLayer}
 
@@ -152,6 +157,7 @@ functions:
 
   detectPendingWithdraw:
     handler: src/handlers/detect_pending_withdraw.handler
+    timeout: 60
     layers:
       - {Ref: PythonRequirementsLambdaLayer}
 
