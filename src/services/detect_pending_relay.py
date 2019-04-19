@@ -22,7 +22,7 @@ def execute(chain_config, notification_enabled, relay_from_block_num, apply_rela
 
     # ApplyRelayイベントの取得
     apply_relay_events = contract.get_apply_relay_event_logs(
-        provider_to, chain_config['bridgeContractAddressFrom'], apply_relay_from_block_num)
+        provider_to, chain_config['bridgeContractAddressTo'], apply_relay_from_block_num)
 
     # applyRelayが実行済みのRelayイベントの抽出
     completed_relay_tx_hashes = set()
