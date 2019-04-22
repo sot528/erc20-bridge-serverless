@@ -3,12 +3,15 @@ import json
 import requests
 
 
-def notify_pending_relays(is_deposit, pending_relays, relay_from_block_num, apply_relay_from_block_num):
+def notify_pending_relays(is_deposit, pending_relays,
+                          relay_from_block_num, apply_relay_from_block_num):
     """ 未完了の入出金を通知
     """
     # valueの生成
-    value = 'Relay取得開始ブロック数: {relay_from_block_num}\nApplyRelay取得開始ブロック数: {apply_relay_from_block_num}\n'.format(
-        relay_from_block_num=relay_from_block_num, apply_relay_from_block_num=apply_relay_from_block_num)
+    value = ('Relay取得開始ブロック数: {relay_from_block_num}\n'
+             'ApplyRelay取得開始ブロック数: {apply_relay_from_block_num}\n').format(
+        relay_from_block_num=relay_from_block_num,
+        apply_relay_from_block_num=apply_relay_from_block_num)
     value += '件数: {pending_relay_count}件'.format(
         pending_relay_count=len(pending_relays))
 
@@ -27,7 +30,8 @@ def notify_pending_relays(is_deposit, pending_relays, relay_from_block_num, appl
                 'color': '#36a64f',
                 'fields': [
                     {
-                        'title': ':alis: 失敗した{relay_type}処理があります :alis:'.format(relay_type=relay_type),
+                        'title': ':alis: 失敗した{relay_type}処理があります :alis:'
+                        .format(relay_type=relay_type),
                         'value': value,
                         'short': False
                     }
@@ -59,9 +63,14 @@ def _notify(payload):
         }
     ]}
     """
-    return requests.post(os.environ['SLACK_NOTIFICATION_URL'], data=json.dumps({
-        'username': payload['username'] if 'username' in payload is None else u'alis',
-        'icon_emoji': payload['icon_emoji'] if 'icon_emoji' in payload is None else u':alischan:',
-        'link_names': 1,  # メンションを有効にする
-        'attachments': payload['attachments']
-    }))
+    return requests.post(
+        os.environ['SLACK_NOTIFICATION_URL'],
+        data=json.dumps({
+            'username': (payload['username']
+                         if 'username' in payload is None else u'alis'),
+            'icon_emoji': (payload['icon_emoji']
+                           if 'icon_emoji' in payload is None
+                           else u':alischan:'),
+            'link_names': 1,  # メンションを有効にする
+            'attachments': payload['attachments']
+        }))

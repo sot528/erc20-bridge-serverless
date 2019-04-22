@@ -1,7 +1,7 @@
 import os
 import json
 from unittest import TestCase
-from unittest.mock import patch, MagicMock, call, ANY
+from unittest.mock import patch
 from src.services.helpers import contract
 from src.services.helpers import notification
 from tests.mock_data import mock_relay_log
@@ -26,7 +26,9 @@ class TestNotification(TestCase):
                     'fields': [
                         {
                             'title': ':alis: 失敗した入金処理があります :alis:',
-                            'value': 'Relay取得開始ブロック数: 10\nApplyRelay取得開始ブロック数: 100\n件数: 3件',
+                            'value': ('Relay取得開始ブロック数: 10\n'
+                                      'ApplyRelay取得開始ブロック数: 100\n'
+                                      '件数: 3件'),
                             'short': False
                         }
                     ]
@@ -52,7 +54,9 @@ class TestNotification(TestCase):
                     'fields': [
                         {
                             'title': ':alis: 失敗した出金処理があります :alis:',
-                            'value': 'Relay取得開始ブロック数: 10\nApplyRelay取得開始ブロック数: 100\n件数: 3件',
+                            'value': ('Relay取得開始ブロック数: 10\n'
+                                      'ApplyRelay取得開始ブロック数: 100\n'
+                                      '件数: 3件'),
                             'short': False
                         }
                     ]
@@ -84,9 +88,11 @@ class TestNotification(TestCase):
         notification._notify(payload)
 
         # Assert call
-        mock_post.assert_called_with(os.environ['SLACK_NOTIFICATION_URL'], data=json.dumps({
-            'username': 'alis',
-            'icon_emoji': ':alischan:',
-            'link_names': 1,
-            'attachments': payload['attachments']
-        }))
+        mock_post.assert_called_with(
+            os.environ['SLACK_NOTIFICATION_URL'],
+            data=json.dumps({
+                'username': 'alis',
+                'icon_emoji': ':alischan:',
+                'link_names': 1,
+                'attachments': payload['attachments']
+            }))

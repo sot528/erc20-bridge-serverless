@@ -1,9 +1,8 @@
 from unittest import TestCase
-from unittest.mock import patch, MagicMock, call, ANY
+from unittest.mock import patch, call, ANY
 from src.services import bridge
 from tests import helper
 from tests.mock_data import mock_relay_log
-from tests.mock_data import mock_apply_relay_log
 
 
 class TestBridge(TestCase):
@@ -17,7 +16,11 @@ class TestBridge(TestCase):
     @patch('src.services.helpers.contract.apply_relay')
     @patch('src.services.bridge._get_latest_block_number')
     @patch('web3.eth.Eth.getTransactionCount')
-    def test_ok_bridge(self, mock_get_transaction_count, mock_get_latest_block_number, mock_apply_relay, mock_get_relay_event_logs):
+    def test_ok_bridge(self, mock_get_transaction_count,
+                       mock_get_latest_block_number,
+                       mock_apply_relay,
+                       mock_get_relay_event_logs):
+
         # constants
         LATEST_BLOCK_NUMBER = 100000
         TRANSACTION_COUNT = 10
@@ -65,7 +68,13 @@ class TestBridge(TestCase):
     @patch('src.services.helpers.contract.apply_relay')
     @patch('src.services.bridge._get_latest_block_number')
     @patch('web3.eth.Eth.getTransactionCount')
-    def test_ok_bridge_when_block_offset_is_not_zero(self, mock_get_transaction_count, mock_get_latest_block_number, mock_apply_relay, mock_get_relay_event_logs):
+    def test_ok_bridge_when_block_offset_is_not_zero(
+            self,
+            mock_get_transaction_count,
+            mock_get_latest_block_number,
+            mock_apply_relay,
+            mock_get_relay_event_logs):
+
         # constants
         LATEST_BLOCK_NUMBER = 100000
         TRANSACTION_COUNT = 10
@@ -119,7 +128,13 @@ class TestBridge(TestCase):
     @patch('src.services.helpers.contract.apply_relay')
     @patch('src.services.bridge._get_latest_block_number')
     @patch('web3.eth.Eth.getTransactionCount')
-    def test_ok_bridge_when_latest_block_was_already_processed(self, mock_get_transaction_count, mock_get_latest_block_number, mock_apply_relay, mock_get_relay_event_logs):
+    def test_ok_bridge_when_latest_block_was_already_processed(
+            self,
+            mock_get_transaction_count,
+            mock_get_latest_block_number,
+            mock_apply_relay,
+            mock_get_relay_event_logs):
+
         # constants
         LATEST_BLOCK_NUMBER = 100000
         TRANSACTION_COUNT = 10

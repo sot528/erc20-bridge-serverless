@@ -1,9 +1,9 @@
 import os
-os.environ['ALIS_APP_ID'] = 'test'
-
-from src.handlers.helpers import helper
+from unittest.mock import patch
 from unittest import TestCase
-from unittest.mock import patch, MagicMock, call, ANY
+from src.handlers.helpers import helper
+
+os.environ['ALIS_APP_ID'] = 'test'
 
 
 class TestHelper(TestCase):
@@ -24,9 +24,11 @@ class TestHelper(TestCase):
         self.assertEqual(deposit_config, {
             'isDeposit': True,
             'chainRpcUrlFrom': os.environ['PUBLIC_CHAIN_RPC_URL'],
-            'bridgeContractAddressFrom': os.environ['PUBLIC_CHAIN_BRIDGE_CONTRACT_ADDRESS'],
+            'bridgeContractAddressFrom':
+                os.environ['PUBLIC_CHAIN_BRIDGE_CONTRACT_ADDRESS'],
             'chainRpcUrlTo': os.environ['PRIVATE_CHAIN_RPC_URL'],
-            'bridgeContractAddressTo': os.environ['PRIVATE_CHAIN_BRIDGE_CONTRACT_ADDRESS'],
+            'bridgeContractAddressTo':
+                os.environ['PRIVATE_CHAIN_BRIDGE_CONTRACT_ADDRESS'],
             'gas': os.environ['PRIVATE_CHAIN_GAS'],
             'gasPrice': os.environ['PRIVATE_CHAIN_GAS_PRICE']
         })
@@ -38,9 +40,11 @@ class TestHelper(TestCase):
         self.assertEqual(withdraw_config, {
             'isDeposit': False,
             'chainRpcUrlFrom': os.environ['PRIVATE_CHAIN_RPC_URL'],
-            'bridgeContractAddressFrom': os.environ['PRIVATE_CHAIN_BRIDGE_CONTRACT_ADDRESS'],
+            'bridgeContractAddressFrom':
+                os.environ['PRIVATE_CHAIN_BRIDGE_CONTRACT_ADDRESS'],
             'chainRpcUrlTo': os.environ['PUBLIC_CHAIN_RPC_URL'],
-            'bridgeContractAddressTo': os.environ['PUBLIC_CHAIN_BRIDGE_CONTRACT_ADDRESS'],
+            'bridgeContractAddressTo':
+                os.environ['PUBLIC_CHAIN_BRIDGE_CONTRACT_ADDRESS'],
             'gas': os.environ['PUBLIC_CHAIN_GAS'],
             'gasPrice': os.environ['PUBLIC_CHAIN_GAS_PRICE']
         })

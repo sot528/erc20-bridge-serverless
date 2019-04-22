@@ -6,7 +6,8 @@ with open('abi/Bridge.json', 'rt') as file:
     BRIDGE_ABI = json.loads(file.read())
 
 
-def apply_relay(provider, contract_address, private_key, sender, recipient, amount, txHash, gas, gasPrice, nonce):
+def apply_relay(provider, contract_address, private_key, sender,
+                recipient, amount, txHash, gas, gasPrice, nonce):
     """ applyRelayの実行
     """
     if BRIDGE_ABI is None:
@@ -17,11 +18,14 @@ def apply_relay(provider, contract_address, private_key, sender, recipient, amou
     contract = web3.eth.contract(
         web3.toChecksumAddress(contract_address), abi=BRIDGE_ABI)
 
-    transaction = contract.functions.applyRelay(web3.toChecksumAddress(sender), web3.toChecksumAddress(recipient), amount, txHash).buildTransaction({
-        'nonce': nonce,
-        'gas': hex(int(gas)),
-        'gasPrice': hex(int(gasPrice))
-    })
+    transaction = contract.functions.applyRelay(
+        web3.toChecksumAddress(sender),
+        web3.toChecksumAddress(recipient),
+        amount, txHash).buildTransaction({
+            'nonce': nonce,
+            'gas': hex(int(gas)),
+            'gasPrice': hex(int(gasPrice))
+        })
 
     signed_transaction = web3.eth.account.signTransaction(
         transaction, private_key=private_key)
@@ -30,7 +34,8 @@ def apply_relay(provider, contract_address, private_key, sender, recipient, amou
         signed_transaction.rawTransaction).hex()
 
 
-def get_relay_event_logs(provider, contract_address, from_block, to_block="latest"):
+def get_relay_event_logs(provider, contract_address,
+                         from_block, to_block="latest"):
     """ Relayイベントの取得
     """
     web3 = Web3(provider)
@@ -38,9 +43,10 @@ def get_relay_event_logs(provider, contract_address, from_block, to_block="lates
     event_signature_hash = web3.sha3(
         text="Relay(address,address,uint256,uint256,uint256)").hex()
 
-    return web3.eth.getLogs({'fromBlock': from_block, 'toBlock': to_block,
-                             'address': web3.toChecksumAddress(contract_address),
-                             'topics': [event_signature_hash]})
+    return web3.eth.getLogs(
+        {'fromBlock': from_block, 'toBlock': to_block,
+         'address': web3.toChecksumAddress(contract_address),
+         'topics': [event_signature_hash]})
 
 
 def get_relay_event_log_by_tx_hash(provider, relay_transaction_hash):
@@ -52,7 +58,8 @@ def get_relay_event_log_by_tx_hash(provider, relay_transaction_hash):
         relay_transaction_hash)['logs'][1]
 
 
-def get_apply_relay_event_logs(provider, contract_address, from_block, to_block="latest"):
+def get_apply_relay_event_logs(provider, contract_address,
+                               from_block, to_block="latest"):
     """ ApplyRelayイベントの取得
     """
     web3 = Web3(provider)
@@ -60,9 +67,10 @@ def get_apply_relay_event_logs(provider, contract_address, from_block, to_block=
     event_signature_hash = web3.sha3(
         text="ApplyRelay(address,address,uint256,bytes32)").hex()
 
-    return web3.eth.getLogs({'fromBlock': from_block, 'toBlock': to_block,
-                             'address': web3.toChecksumAddress(contract_address),
-                             'topics': [event_signature_hash]})
+    return web3.eth.getLogs(
+        {'fromBlock': from_block, 'toBlock': to_block,
+         'address': web3.toChecksumAddress(contract_address),
+         'topics': [event_signature_hash]})
 
 
 def parse_relay_event_log(relay_event_log):

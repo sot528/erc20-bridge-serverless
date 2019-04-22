@@ -1,0 +1,4 @@
+pycodestyle==2.5.0
+pycryptodome==3.7.3
+pylint==2.2.2
+pyflakes==2.0.0
