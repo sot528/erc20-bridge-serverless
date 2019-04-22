@@ -10,7 +10,8 @@ class TestRetryApplyRelay(TestCase):
 
     @patch('src.services.helpers.contract.get_relay_event_log_by_tx_hash')
     @patch('src.services.helpers.contract.apply_relay')
-    def test_ok_retry_apply_relay(self, mock_apply_relay, mock_get_relay_event_log_by_tx_hash):
+    def test_ok_retry_apply_relay(self, mock_apply_relay,
+                                  mock_get_relay_event_log_by_tx_hash):
         # Setup mock
         mock_apply_relay.return_value = '0x' + 'a' * 64
 
@@ -19,7 +20,8 @@ class TestRetryApplyRelay(TestCase):
                 if log['transactionHash'].hex() == hash:
                     return log
             return None
-        mock_get_relay_event_log_by_tx_hash.side_effect = relay_event_log_side_effect
+        mock_get_relay_event_log_by_tx_hash.side_effect \
+            = relay_event_log_side_effect
 
         # Execute
         relay_transactions = [log['transactionHash'].hex()

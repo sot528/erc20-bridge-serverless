@@ -13,7 +13,9 @@ class TestContract(TestCase):
     @patch('web3.eth.Account.signTransaction')
     @patch('web3.eth.Eth.sendRawTransaction')
     @patch('web3.eth.Eth.contract')
-    def test_ok_apply_relay(self, mock_applyRelay, mock_sendRawTransaction, mock_signTransaction):
+    def test_ok_apply_relay(self, mock_applyRelay,
+                            mock_sendRawTransaction,
+                            mock_signTransaction):
         provider = Web3.HTTPProvider('http://example.com')
         contract_address = helper.CHAIN_CONFIG['bridgeContractAddressTo']
         private_key = helper.PRIVATE_KEY
@@ -28,21 +30,24 @@ class TestContract(TestCase):
 
         # Execute apply_relay
         contract.apply_relay(provider, contract_address, private_key,
-                             sender, recipient, amount, tx_hash, gas, gas_price, nonce)
+                             sender, recipient, amount, tx_hash,
+                             gas, gas_price, nonce)
 
         # Assert call
-        mock_applyRelay.return_value.functions.applyRelay.assert_called_once_with(
-            web3.toChecksumAddress(sender),
-            web3.toChecksumAddress(recipient),
-            amount,
-            tx_hash
-        )
+        mock_applyRelay.return_value \
+            .functions.applyRelay.assert_called_once_with(
+                web3.toChecksumAddress(sender),
+                web3.toChecksumAddress(recipient),
+                amount,
+                tx_hash
+            )
 
-        mock_applyRelay.return_value.functions.applyRelay.return_value.buildTransaction.assert_called_once_with({
-            'nonce': nonce,
-            'gas': hex(gas),
-            'gasPrice': hex(gas_price)
-        })
+        mock_applyRelay.return_value.functions \
+            .applyRelay.return_value.buildTransaction.assert_called_once_with({
+                'nonce': nonce,
+                'gas': hex(gas),
+                'gasPrice': hex(gas_price)
+            })
 
         mock_sendRawTransaction.assert_called()
 
@@ -65,20 +70,24 @@ class TestContract(TestCase):
         mock_getLogs.assert_called_with({
             'fromBlock': from_block, 'toBlock': to_block,
             'address': web3.toChecksumAddress(contract_address),
-            'topics': [web3.sha3(text='Relay(address,address,uint256,uint256,uint256)').hex()]
+            'topics': [web3.sha3(
+                text='Relay(address,address,uint256,uint256,uint256)').hex()]
         })
 
     @patch('web3.eth.Eth.getTransactionReceipt')
-    def test_ok_get_relay_event_log_by_tx_hash(self, mock_getTransactionReceipt):
+    def test_ok_get_relay_event_log_by_tx_hash(self,
+                                               mock_getTransactionReceipt):
         provider = Web3.HTTPProvider('http://example.com')
         web3 = Web3(provider)
 
         # Setup mock
-        mock_getTransactionReceipt.return_value = mock_relay_transaction_receipt.data
+        mock_getTransactionReceipt.return_value \
+            = mock_relay_transaction_receipt.data
 
         # Execute get_relay_event_log_by_tx_hash
         log = contract.get_relay_event_log_by_tx_hash(
-            provider, mock_relay_transaction_receipt.data['transactionHash'].hex())
+            provider,
+            mock_relay_transaction_receipt.data['transactionHash'].hex())
 
         # Assert return value
         self.assertEqual(log['topics'][0].hex(), web3.sha3(
@@ -103,7 +112,8 @@ class TestContract(TestCase):
         mock_getLogs.assert_called_with({
             'fromBlock': from_block, 'toBlock': to_block,
             'address': web3.toChecksumAddress(contract_address),
-            'topics': [web3.sha3(text='ApplyRelay(address,address,uint256,bytes32)').hex()]
+            'topics': [web3.sha3(
+                text='ApplyRelay(address,address,uint256,bytes32)').hex()]
         })
 
     def test_ok_parse_relay_event_log(self):
@@ -117,7 +127,8 @@ class TestContract(TestCase):
             "amount": 10,
             "fee": 100,
             "timestamp": 0x5ca5a633,
-            "txHash": "0x85af52eb9d1420e2fb96e970da8945f166952927f16656427557b5cf0d890a09",
+            "txHash": ("0x85af52eb9d1420e2fb96e970da8945f1"
+                       "66952927f16656427557b5cf0d890a09"),
             "blockNumber": 5337358
         })
 
@@ -128,5 +139,6 @@ class TestContract(TestCase):
 
         # Assert return value
         self.assertEqual(parsed_log, {
-            "relayTxHash": "0x85af52eb9d1420e2fb96e970da8945f166952927f16656427557b5cf0d890a09"
+            "relayTxHash": ("0x85af52eb9d1420e2fb96e970da8945f1"
+                            "66952927f16656427557b5cf0d890a09")
         })

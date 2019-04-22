@@ -17,7 +17,11 @@ class TestBridge(TestCase):
     @patch('src.services.helpers.contract.apply_relay')
     @patch('src.services.bridge._get_latest_block_number')
     @patch('web3.eth.Eth.getTransactionCount')
-    def test_ok_bridge(self, mock_get_transaction_count, mock_get_latest_block_number, mock_apply_relay, mock_get_relay_event_logs):
+    def test_ok_bridge(self, mock_get_transaction_count,
+                       mock_get_latest_block_number,
+                       mock_apply_relay,
+                       mock_get_relay_event_logs):
+
         # constants
         LATEST_BLOCK_NUMBER = 100000
         TRANSACTION_COUNT = 10
@@ -65,7 +69,13 @@ class TestBridge(TestCase):
     @patch('src.services.helpers.contract.apply_relay')
     @patch('src.services.bridge._get_latest_block_number')
     @patch('web3.eth.Eth.getTransactionCount')
-    def test_ok_bridge_when_block_offset_is_not_zero(self, mock_get_transaction_count, mock_get_latest_block_number, mock_apply_relay, mock_get_relay_event_logs):
+    def test_ok_bridge_when_block_offset_is_not_zero(
+            self,
+            mock_get_transaction_count,
+            mock_get_latest_block_number,
+            mock_apply_relay,
+            mock_get_relay_event_logs):
+
         # constants
         LATEST_BLOCK_NUMBER = 100000
         TRANSACTION_COUNT = 10
@@ -119,7 +129,13 @@ class TestBridge(TestCase):
     @patch('src.services.helpers.contract.apply_relay')
     @patch('src.services.bridge._get_latest_block_number')
     @patch('web3.eth.Eth.getTransactionCount')
-    def test_ok_bridge_when_latest_block_was_already_processed(self, mock_get_transaction_count, mock_get_latest_block_number, mock_apply_relay, mock_get_relay_event_logs):
+    def test_ok_bridge_when_latest_block_was_already_processed(
+            self,
+            mock_get_transaction_count,
+            mock_get_latest_block_number,
+            mock_apply_relay,
+            mock_get_relay_event_logs):
+
         # constants
         LATEST_BLOCK_NUMBER = 100000
         TRANSACTION_COUNT = 10

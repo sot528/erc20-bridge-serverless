@@ -20,8 +20,11 @@ def execute(chain_config, dynamo_table, private_key):
 
     if latest_block_num < relay_block_offset:
         # 最新のブロックを処理済み
-        logger.info('There is no more block. latestBlockNum={latest_block_num}, blockOffset={relay_block_offset}'.format(
-            latest_block_num=latest_block_num, relay_block_offset=relay_block_offset))
+        logger.info('There is no more block. '
+                    'latestBlockNum={latest_block_num}, '
+                    'blockOffset={relay_block_offset}'
+                    .format(latest_block_num=latest_block_num,
+                            relay_block_offset=relay_block_offset))
         return
 
     # nonce設定のためトランザクション数の取得
@@ -30,29 +33,48 @@ def execute(chain_config, dynamo_table, private_key):
 
     # Relayイベントを取得
     relay_event_logs = contract.get_relay_event_logs(
-        provider_from, chain_config['bridgeContractAddressFrom'], relay_block_offset, latest_block_num)
+        provider_from,
+        chain_config['bridgeContractAddressFrom'],
+        relay_block_offset,
+        latest_block_num)
 
-    logger.info('---------- {num} Relay events from block {fromBlock} to {toBlock} ----------'.format(
-        num=len(relay_event_logs), fromBlock=relay_block_offset, toBlock=latest_block_num))
+    logger.info('---------- {num} Relay events '
+                'from block {fromBlock} to {toBlock} ----------'
+                .format(num=len(relay_event_logs),
+                        fromBlock=relay_block_offset,
+                        toBlock=latest_block_num))
 
     # 各Relayイベントに対して、applyRelay処理を実行
     for relay_event_log in relay_event_logs:
         parsed_event = contract.parse_relay_event_log(relay_event_log)
         logger.info(
-            '[RelayEvent] timestamp={timestamp}, blockNum={blockNumber}, txHash={txHash}, sender={sender}, recipient={recipient}, amount={amount}, fee={fee}'
+            '[RelayEvent] timestamp={timestamp}, blockNum={blockNumber}, '
+            'txHash={txHash}, sender={sender}, recipient={recipient}, '
+            'amount={amount}, fee={fee}'
             .format(**parsed_event))
 
         try:
             # applyRelay処理を実行
-            response = contract.apply_relay(provider_to, chain_config['bridgeContractAddressTo'],
-                                            private_key,
-                                            parsed_event['sender'], parsed_event['recipient'], parsed_event['amount'], parsed_event['txHash'],
-                                            chain_config['gas'], chain_config['gasPrice'], nonce)
+            response = contract.apply_relay(
+                provider_to,
+                chain_config['bridgeContractAddressTo'],
+                private_key,
+                parsed_event['sender'],
+                parsed_event['recipient'],
+                parsed_event['amount'],
+                parsed_event['txHash'],
+                chain_config['gas'],
+                chain_config['gasPrice'],
+                nonce)
+
             # nonceのカウントアップ
             nonce += 1
 
             logger.info(
-                '[ApplyRelay] txHash={txHash}, relayEventTxHash={relayEventTxHash}'.format(txHash=response, relayEventTxHash=parsed_event['txHash']))
+                '[ApplyRelay] txHash={txHash}, '
+                'relayEventTxHash={relayEventTxHash}'
+                .format(txHash=response,
+                        relayEventTxHash=parsed_event['txHash']))
         except Exception as e:
             logger.error('[ApplyRelay] failed. error={error}'.format(error=e))
             continue
