@@ -62,13 +62,13 @@ jobs:
           name: run checkstyle for python code
           command: |
             . venv/bin/activate
-            pycodestyle src tests ./*.py
+            pycodestyle src tests
 
       - run:
           name: run pyflakes for python code
           command: |
             . venv/bin/activate
-            pyflakes src tests ./*.py
+            pyflakes src tests
 
       - run:
           name: run tests
