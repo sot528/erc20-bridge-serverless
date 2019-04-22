@@ -1,4 +1,5 @@
 # erc20-bridge-serverless
+[![CircleCI](https://circleci.com/gh/AlisProject/erc20-bridge-serverless/tree/master.svg?style=svg)](https://circleci.com/gh/AlisProject/erc20-bridge-serverless/tree/master)
 
 # Prerequisite
 - node.js
