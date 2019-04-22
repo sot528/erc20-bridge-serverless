@@ -1,7 +1,7 @@
 import os
 import json
 from unittest import TestCase
-from unittest.mock import patch, MagicMock, call, ANY
+from unittest.mock import patch
 from src.services.helpers import contract
 from src.services.helpers import notification
 from tests.mock_data import mock_relay_log

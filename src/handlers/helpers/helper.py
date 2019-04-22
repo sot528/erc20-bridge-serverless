@@ -1,6 +1,5 @@
 import os
 import boto3
-import logging
 
 
 def get_db_table():

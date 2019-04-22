@@ -1,9 +1,8 @@
 from unittest import TestCase
-from unittest.mock import patch, MagicMock, call, ANY
+from unittest.mock import patch, call, ANY
 from src.services import bridge
 from tests import helper
 from tests.mock_data import mock_relay_log
-from tests.mock_data import mock_apply_relay_log
 
 
 class TestBridge(TestCase):

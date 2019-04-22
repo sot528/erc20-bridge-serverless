@@ -1,6 +1,5 @@
-from web3 import Web3
 from unittest import TestCase
-from unittest.mock import patch, MagicMock, call, ANY
+from unittest.mock import patch
 from src.services import detect_pending_relay
 from src.services.helpers import contract
 from tests import helper
