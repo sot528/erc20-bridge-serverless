@@ -43,3 +43,10 @@ def execute(chain_config, private_key, relay_transactions):
             continue
 
     logger.info('Finished')
+
+
+def _get_transaction_count(provider, account):
+    """ トランザクション数の取得
+    """
+    web3 = Web3(provider)
+    return web3.eth.getTransactionCount(web3.toChecksumAddress(account))
