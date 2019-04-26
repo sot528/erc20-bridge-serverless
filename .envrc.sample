@@ -16,11 +16,6 @@ export VPC_SUBNET_ID=xxxxx
 export VPC_SECURITY_GROUP_ID=xxxxx
 
 
-## SSMパラメータの値
-export OPERATOR_PUBLIC_CHAIN_PRIVATE_KEY=xxxxx
-export OPERATOR_PRIVATE_CHAIN_PRIVATE_KEY=xxxxx
-
-
 # --- AWS ---
 
 export AWS_DEFAULT_REGION=ap-northeast-1
