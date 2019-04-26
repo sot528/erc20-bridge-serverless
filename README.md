@@ -53,6 +53,12 @@ yarn test
 # Register SSM Parameters
 
 ```bash
+# Set environment variable of operator's private key in public chain.
+export OPERATOR_PUBLIC_CHAIN_PRIVATE_KEY=0x...
+
+# Set environment variable of operator's private key in private chain.
+export OPERATOR_PRIVATE_CHAIN_PRIVATE_KEY=0x...
+
 script/register_ssm_parameters.sh
 ```
 
