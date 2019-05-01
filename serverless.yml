@@ -93,6 +93,10 @@ functions:
     # events:
     #   - schedule: rate(1 minutes)
 
+    # CloudWatch alarm
+    alarms:
+      - functionErrors
+
     # Function specific environments
     environment:
       PRIVATE_CHAIN_GAS: ${file(./chain_config.yml):private.gas}
@@ -107,6 +111,10 @@ functions:
     # # Scheduling
     # events:
     #   - schedule: rate(1 minutes)
+
+    # CloudWatch alarm
+    alarms:
+      - functionErrors
 
     # Function specific environments
     environment:
@@ -146,6 +154,10 @@ functions:
     #       input:
     #         notificationEnabled: true
 
+    # CloudWatch alarm
+    alarms:
+      - functionErrors
+
     # Function specific environments
     environment:
       SLACK_NOTIFICATION_URL: ${ssm:${env:ALIS_APP_ID}ssmSlackNotificationUrl}
@@ -166,6 +178,10 @@ functions:
     #       input:
     #         notificationEnabled: true
 
+    # CloudWatch alarm
+    alarms:
+      - functionErrors
+
     # Function specific environments
     environment:
       SLACK_NOTIFICATION_URL: ${ssm:${env:ALIS_APP_ID}ssmSlackNotificationUrl}
@@ -177,6 +193,7 @@ functions:
 # Plugins
 plugins:
   - serverless-python-requirements
+  - serverless-plugin-aws-alerts
 
 
 # Resources
@@ -201,6 +218,20 @@ resources:
 
 # Custom settings
 custom:
+  # serverless-python-requirements
   pythonRequirements:
     dockerizePip: true
     layer: true
+
+  # serverless-plugin-aws-alerts
+  alerts:
+    stages:
+      - alis
+    topics:
+      alarm: "arn:aws:sns:ap-northeast-1:879243243508:alarm-to-slack"
+    definitions:
+      functionErrors:
+        description: "ERC20 Bridge lambda error alarm"
+        treatMissingData: notBreaching
+    alarms:
+      - functionErrors
