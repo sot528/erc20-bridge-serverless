@@ -89,9 +89,9 @@ functions:
     layers:
       - {Ref: PythonRequirementsLambdaLayer}
 
-    # # Scheduling
-    # events:
-    #   - schedule: rate(1 minutes)
+    # Scheduling
+    events:
+      - schedule: rate(5 minutes)
 
     # Function specific environments
     environment:
@@ -103,10 +103,9 @@ functions:
     layers:
       - {Ref: PythonRequirementsLambdaLayer}
 
-    # NOTICE 初期運用時は手動で実行
-    # # Scheduling
-    # events:
-    #   - schedule: rate(1 minutes)
+    # Scheduling
+    events:
+      - schedule: rate(5 minutes)
 
     # Function specific environments
     environment:
@@ -138,18 +137,17 @@ functions:
     layers:
       - {Ref: PythonRequirementsLambdaLayer}
 
-    # NOTICE 初期運用時は手動で実行
-    # # Scheduling
-    # events:
-    #   - schedule:
-    #       rate: rate(1 hours)
-    #       input:
-    #         notificationEnabled: true
+    # Scheduling
+    events:
+      - schedule:
+          rate: rate(30 minutes)
+          input:
+            notificationEnabled: true
 
     # Function specific environments
     environment:
       SLACK_NOTIFICATION_URL: ${ssm:${env:ALIS_APP_ID}ssmSlackNotificationUrl}
-      RELAY_IGNORE_SEC_THRESHOLD: 0
+      RELAY_IGNORE_SEC_THRESHOLD: 900
       RELAY_FROM_BLOCK_NUM: 1
       APPLY_RELAY_FROM_BLOCK_NUM: 1
 
@@ -158,18 +156,17 @@ functions:
     layers:
       - {Ref: PythonRequirementsLambdaLayer}
 
-    # NOTICE 初期運用時は手動で実行
-    # # Scheduling
-    # events:
-    #   - schedule:
-    #       rate: rate(1 hours)
-    #       input:
-    #         notificationEnabled: true
+    # Scheduling
+    events:
+      - schedule:
+          rate: rate(30 minutes)
+          input:
+            notificationEnabled: true
 
     # Function specific environments
     environment:
       SLACK_NOTIFICATION_URL: ${ssm:${env:ALIS_APP_ID}ssmSlackNotificationUrl}
-      RELAY_IGNORE_SEC_THRESHOLD: 0
+      RELAY_IGNORE_SEC_THRESHOLD: 900
       RELAY_FROM_BLOCK_NUM: 1
       APPLY_RELAY_FROM_BLOCK_NUM: 1
 
