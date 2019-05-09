@@ -93,7 +93,6 @@ functions:
     # events:
     #   - schedule: rate(1 minutes)
 
-    # CloudWatch alarm
     alarms:
       - functionErrors
 
@@ -112,7 +111,6 @@ functions:
     # events:
     #   - schedule: rate(1 minutes)
 
-    # CloudWatch alarm
     alarms:
       - functionErrors
 
@@ -125,6 +123,8 @@ functions:
     handler: src/handlers/retry_deposit.handler
     layers:
       - {Ref: PythonRequirementsLambdaLayer}
+    alarms:
+      - functionErrors
 
     # Function specific environments
     environment:
@@ -135,6 +135,8 @@ functions:
     handler: src/handlers/retry_withdraw.handler
     layers:
       - {Ref: PythonRequirementsLambdaLayer}
+    alarms:
+      - functionErrors
 
     # Function specific environments
     environment:
@@ -154,9 +156,10 @@ functions:
     #       input:
     #         notificationEnabled: true
 
-    # CloudWatch alarm
-    alarms:
-      - functionErrors
+    # エラーが発生するがALIS-3166でペンディングと意思決定したため、この関数ではアラームを設定しない
+    # - http://bit.ly/307R2Fi
+    # alarms:
+    #   - functionErrors
 
     # Function specific environments
     environment:
@@ -178,9 +181,10 @@ functions:
     #       input:
     #         notificationEnabled: true
 
-    # CloudWatch alarm
-    alarms:
-      - functionErrors
+    # エラーが発生するがALIS-3166でペンディングと意思決定したため、この関数ではアラームを設定しない
+    # - http://bit.ly/307R2Fi
+    # alarms:
+    #   - functionErrors
 
     # Function specific environments
     environment:
@@ -228,10 +232,8 @@ custom:
     stages:
       - alis
     topics:
-      alarm: "arn:aws:sns:ap-northeast-1:879243243508:alarm-to-slack"
+      alarm: "arn:aws:sns:ap-northeast-1:879243243508:AlarmToSlack"
     definitions:
       functionErrors:
-        description: "ERC20 Bridge lambda error alarm"
+        description: "ERC20 BridgeのLambdaでエラーが発生したときに通知"
         treatMissingData: notBreaching
-    alarms:
-      - functionErrors
