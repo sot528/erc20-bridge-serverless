@@ -93,6 +93,9 @@ functions:
     events:
       - schedule: rate(5 minutes)
 
+    alarms:
+      - functionErrors
+
     # Function specific environments
     environment:
       PRIVATE_CHAIN_GAS: ${file(./chain_config.yml):private.gas}
@@ -107,6 +110,9 @@ functions:
     events:
       - schedule: rate(5 minutes)
 
+    alarms:
+      - functionErrors
+
     # Function specific environments
     environment:
       PUBLIC_CHAIN_GAS: ${file(./chain_config.yml):public.gas}
@@ -116,6 +122,8 @@ functions:
     handler: src/handlers/retry_deposit.handler
     layers:
       - {Ref: PythonRequirementsLambdaLayer}
+    alarms:
+      - functionErrors
 
     # Function specific environments
     environment:
@@ -126,6 +134,8 @@ functions:
     handler: src/handlers/retry_withdraw.handler
     layers:
       - {Ref: PythonRequirementsLambdaLayer}
+    alarms:
+      - functionErrors
 
     # Function specific environments
     environment:
@@ -143,6 +153,11 @@ functions:
           rate: rate(30 minutes)
           input:
             notificationEnabled: true
+
+    # エラーが発生するがALIS-3166でペンディングと意思決定したため、この関数ではアラームを設定しない
+    # - http://bit.ly/307R2Fi
+    # alarms:
+    #   - functionErrors
 
     # Function specific environments
     environment:
@@ -163,6 +178,11 @@ functions:
           input:
             notificationEnabled: true
 
+    # エラーが発生するがALIS-3166でペンディングと意思決定したため、この関数ではアラームを設定しない
+    # - http://bit.ly/307R2Fi
+    # alarms:
+    #   - functionErrors
+
     # Function specific environments
     environment:
       SLACK_NOTIFICATION_URL: ${ssm:${env:ALIS_APP_ID}ssmSlackNotificationUrl}
@@ -174,6 +194,7 @@ functions:
 # Plugins
 plugins:
   - serverless-python-requirements
+  - serverless-plugin-aws-alerts
 
 
 # Resources
@@ -198,6 +219,18 @@ resources:
 
 # Custom settings
 custom:
+  # serverless-python-requirements
   pythonRequirements:
     dockerizePip: true
     layer: true
+
+  # serverless-plugin-aws-alerts
+  alerts:
+    stages:
+      - alis
+    topics:
+      alarm: "arn:aws:sns:ap-northeast-1:879243243508:AlarmToSlack"
+    definitions:
+      functionErrors:
+        description: "ERC20 BridgeのLambdaでエラーが発生したときに通知"
+        treatMissingData: notBreaching

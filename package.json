@@ -7,6 +7,7 @@
   "license": "MIT",
   "dependencies": {
     "serverless": "1.40.0",
+    "serverless-plugin-aws-alerts": "^1.2.4",
     "serverless-python-requirements": "^4.3.0"
   },
   "scripts": {
