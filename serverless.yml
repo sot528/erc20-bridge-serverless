@@ -231,6 +231,7 @@ custom:
   alerts:
     stages:
       - alis
+      - staging
     topics:
       alarm: "arn:aws:sns:ap-northeast-1:879243243508:AlarmToSlack"
     definitions:
