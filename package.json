@@ -15,7 +15,5 @@
     "destroy": "./node_modules/serverless/bin/serverless remove",
     "test": "python -m unittest discover -v"
   },
-  "devDependencies": {
-    "serverless-dynamodb-local": "^0.2.36"
-  }
+  "devDependencies": {}
 }
