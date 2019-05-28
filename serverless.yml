@@ -161,7 +161,7 @@ functions:
 
     # Function specific environments
     environment:
-      SLACK_NOTIFICATION_URL: ${ssm:${env:ALIS_APP_ID}ssmSlackNotificationUrl}
+      SLACK_NOTIFICATION_URL: ${ssm:${env:ALIS_APP_ID}ssmSlackAlarmNotificationUrl}
       RELAY_IGNORE_SEC_THRESHOLD: 900
       RELAY_FROM_BLOCK_NUM: 1
       APPLY_RELAY_FROM_BLOCK_NUM: 1
@@ -185,7 +185,7 @@ functions:
 
     # Function specific environments
     environment:
-      SLACK_NOTIFICATION_URL: ${ssm:${env:ALIS_APP_ID}ssmSlackNotificationUrl}
+      SLACK_NOTIFICATION_URL: ${ssm:${env:ALIS_APP_ID}ssmSlackAlarmNotificationUrl}
       RELAY_IGNORE_SEC_THRESHOLD: 900
       RELAY_FROM_BLOCK_NUM: 1
       APPLY_RELAY_FROM_BLOCK_NUM: 1
